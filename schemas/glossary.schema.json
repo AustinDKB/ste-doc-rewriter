@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/AustinDKB/ste-doc-rewriter/schemas/glossary.schema.json",
+  "title": "STE Doc Rewriter Glossary Entry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["term", "replace", "kind"],
+  "properties": {
+    "term": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Source term, abbreviation, or acronym as it appears in messy text."
+    },
+    "replace": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Approved replacement: STE word, short STE phrase, or full expansion."
+    },
+    "kind": {
+      "type": "string",
+      "enum": ["ste_swap", "abbrev_expand", "acronym_expand", "prefer", "protect"]
+    },
+    "pos": {
+      "type": "string",
+      "description": "Optional part of speech (verb, noun, adjective, etc.)."
+    },
+    "domains": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "devops",
+          "data_science",
+          "swe",
+          "design",
+          "analytics",
+          "quality",
+          "general",
+          "other"
+        ]
+      },
+      "default": ["general"]
+    },
+    "protect_if": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["proper_noun", "code_span", "cli_flag", "url", "version"]
+      },
+      "description": "Skip replacement when the match is inside these contexts."
+    },
+    "case_sensitive": {
+      "type": "boolean",
+      "default": false
+    },
+    "source_url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "notes": {
+      "type": "string"
+    }
+  }
+}

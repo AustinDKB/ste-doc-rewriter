@@ -1,0 +1,12 @@
+.env
+.env.*
+*.pem
+__pycache__/
+.venv/
+venv/
+.DS_Store
+data/raw/
+*.gguf
+adapters/
+wandb/
+.cache/
