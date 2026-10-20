@@ -1,6 +1,7 @@
 """Dictionary swap behavior."""
 
 from ste_doc_rewriter.dictionary import apply_swaps
+from ste_doc_rewriter.protect import protect, restore
 
 
 ENTRIES = [
@@ -159,7 +160,30 @@ def test_etc_keeps_period_before_list_item_and_after_final_paren():
 
 def test_first_use_expansion_capitalized_after_code_block_and_in_quote():
     api = [{"term": "API", "replace": "application programming interface (API)", "kind": "acronym_expand", "case_sensitive": True}]
-    out, _ = apply_swaps("Run this:\n\x00P0\x00\nAPI calls fail.", api)
-    assert out == "Run this:\n\x00P0\x00\nApplication programming interface (API) calls fail."
-    out, _ = apply_swaps("> API keys rotate.", api)
-    assert out == "> Application programming interface (API) keys rotate."
+    def swap(text: str) -> str:
+        protected = protect(text)
+        return restore(apply_swaps(protected.text, api)[0], protected.spans)
+
+    assert swap("Run this:\n```\nmake build\n```\nAPI calls fail.") == (
+        "Run this:\n```\nmake build\n```\nApplication programming interface (API) calls fail."
+    )
+    assert swap("> API keys rotate.") == "> Application programming interface (API) keys rotate."
+    assert swap("Run `make build`.\nAPI calls fail.") == (
+        "Run `make build`.\nApplication programming interface (API) calls fail."
+    )
+
+
+def test_first_use_expansion_not_capitalized_mid_sentence_wraps():
+    api = [{"term": "API", "replace": "application programming interface (API)", "kind": "acronym_expand", "case_sensitive": True}]
+
+    def swap(text: str) -> str:
+        protected = protect(text)
+        return restore(apply_swaps(protected.text, api)[0], protected.spans)
+
+    for text in (
+        "> The service calls the\n> API over HTTPS.",
+        "> **Note:** each pod calls the\n> API at start.",
+        "Run the job and\n`make build`\nAPI calls fail.",
+        "This was fixed in issue\n#123 API calls.",
+    ):
+        assert "application programming interface (API)" in swap(text), text

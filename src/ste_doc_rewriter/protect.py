@@ -13,13 +13,14 @@ class ProtectResult:
 
 
 PLACEHOLDER = re.compile(r"\x00P(\d+)\x00")
+_PLACEHOLDER_LINES = re.compile(r"(\x00P\d+\x00)(\n*)")
 
 # Order matters: longer / more specific first.
 _FENCED = re.compile(r"```[\s\S]*?```")
 _INLINE = re.compile(r"`[^`\n]+`")
 # Markdown link target: the "(...)" after "]"
 _LINK_TARGET = re.compile(r"(?<=\])\([^)\n]*\)")
-_URL = re.compile(r"https?://[^\s<>\]\)\"']+")
+_URL = re.compile(r"https?://[^\s<>\]\)\"']*[^\s<>\]\)\"'.,;:!?]")
 # Absolute or relative paths with a slash and a file-ish tail
 _PATH = re.compile(
     r"(?<![\w/])(?:\.{0,2}/)?(?:[\w.-]+/)+[\w.-]+(?![\w/])"
@@ -45,7 +46,11 @@ def _product_pattern(names: list[str]) -> re.Pattern[str] | None:
 
 
 def protect(text: str, product_names: list[str] | None = None) -> ProtectResult:
-    """Replace protected spans with opaque placeholders; restore with restore()."""
+    """Replace protected spans with opaque placeholders; restore with restore().
+
+    A multi-line span (a fenced code block) keeps its newlines after the
+    placeholder, so line numbers match and the block stays its own paragraph.
+    """
     spans: dict[str, str] = {}
     counter = 0
 
@@ -54,7 +59,7 @@ def protect(text: str, product_names: list[str] | None = None) -> ProtectResult:
         key = f"\x00P{counter}\x00"
         spans[key] = match.group(0)
         counter += 1
-        return key
+        return key + "\n" * match.group(0).count("\n")
 
     out = text
     for pattern in (_FENCED, _INLINE, _LINK_TARGET, _URL, _PATH, _FLAG, _NUMBER_UNIT):
@@ -71,17 +76,10 @@ def restore(text: str, spans: dict[str, str]) -> str:
     """Put protected spans back. Unknown placeholders are left as-is."""
 
     def unstash(match: re.Match[str]) -> str:
-        key = match.group(0)
-        return spans.get(key, key)
+        key, newlines = match.groups()
+        if key not in spans:
+            return match.group(0)
+        span = spans[key]
+        return span + newlines[span.count("\n"):]
 
-    return PLACEHOLDER.sub(unstash, text)
-
-
-def mask(text: str, spans: dict[str, str]) -> str:
-    """Keep placeholders for lint, plus the newlines of each span so line numbers match."""
-
-    def keep_lines(match: re.Match[str]) -> str:
-        key = match.group(0)
-        return key + "\n" * spans.get(key, "").count("\n")
-
-    return PLACEHOLDER.sub(keep_lines, text)
+    return _PLACEHOLDER_LINES.sub(unstash, text)

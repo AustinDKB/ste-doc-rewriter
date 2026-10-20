@@ -186,3 +186,31 @@ def test_paragraph_length_counts_wrapped_sentences():
     seven = "One. Two.\nThree. Four.\nFive. Six.\nSeven."
     hits = [f for f in lint(seven).findings if f.rule == "paragraph_length"]
     assert [f.message for f in hits] == ["Paragraph has 7 sentences (max 6)"]
+
+
+def test_inline_code_and_issue_refs_do_not_split_wrapped_sentences():
+    assert split_sentences("To install the tool, run\n\x00P0\x00\nfrom the repo root.") == [
+        "To install the tool, run \x00P0\x00 from the repo root.",
+    ]
+    assert split_sentences("This was fixed in issue\n#123 when the team changed the build.") == [
+        "This was fixed in issue #123 when the team changed the build.",
+    ]
+    assert split_sentences("Run this:\n\x00P0\x00\n\n\nThen stop.") == ["Run this:", "Then stop."]
+
+
+def test_table_rows_and_front_matter_are_not_joined():
+    text = (
+        "---\ntitle: Ops guide for the platform team\nweight: 10\n---\n"
+        "Set these keys.\n"
+        "| Key | Default | Meaning |\n"
+        "|---|---|---|\n"
+        "| timeout | 30 | Wait time |\n"
+        "| retries | 3 | Retry count |\n"
+    )
+    assert split_sentences(text) == [
+        "Set these keys.",
+        "| Key | Default | Meaning |",
+        "| timeout | 30 | Wait time |",
+        "| retries | 3 | Retry count |",
+    ]
+    assert not [f for f in lint(text).findings if f.rule == "sentence_length"]

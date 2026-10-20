@@ -7,7 +7,11 @@ from collections.abc import Iterable
 from typing import Any
 
 from ste_doc_rewriter.glossary import KINDS_SWAP
-from ste_doc_rewriter.protect import PLACEHOLDER
+
+# Markdown line markers (ATX heading, list item, blockquote).
+HEADING = re.compile(r"#{1,6}(?:[ \t]+|$)")
+LIST_ITEM = re.compile(r"(?:[-*+]|\d{1,3}[.)])[ \t]+")
+_QUOTE = re.compile(r"[ \t]*(?:>[ \t]?)*")
 
 # Only "etc." can end a sentence (after an optional ")"): before a capital or a
 # protected span, at the end of a paragraph, or before a list item.
@@ -15,11 +19,13 @@ from ste_doc_rewriter.protect import PLACEHOLDER
 _SENTENCE_FINAL_TERMS = frozenset({"etc."})
 _SENTENCE_BREAK = re.compile(
     r"(\)?)(?:\s+(?:[A-Z]|\x00P)|[ \t]*(?:\n[ \t]*\n|$)"
-    r"|[ \t]*\n[ \t]*(?:[-*+]|\d+[.)])[ \t])"
+    rf"|[ \t]*\n[ \t]*(?:{LIST_ITEM.pattern}))"
 )
-# Line text before a match that starts a sentence: a heading, list or quote
-# marker, or a finished sentence.
-_SENTENCE_START = re.compile(r"[ \t]*(?:#+|[-*+>]|\d+[.)])[ \t]*|.*[.!?][ \t]+")
+# Line text before a match that starts a sentence: a heading or list marker,
+# or a finished sentence.
+_SENTENCE_START = re.compile(
+    rf"[ \t]*(?:{HEADING.pattern}|{LIST_ITEM.pattern})|.*[.!?][ \t]+"
+)
 
 
 def word_pattern(term: str, case_sensitive: bool) -> re.Pattern[str]:
@@ -54,18 +60,22 @@ def _match_case(found: str, replace: str) -> str:
     return replace
 
 
+def _unquote(line: str) -> str:
+    return line[_QUOTE.match(line).end():]
+
+
 def _starts_sentence(text: str, start: int) -> bool:
+    """A match starts a sentence after a heading or list marker or a finished
+    sentence on its line; at the start of a line (inside a blockquote too) when
+    the line before is blank, a heading, or ends a sentence."""
     line_start = text.rfind("\n", 0, start) + 1
-    if text[line_start:start].strip():
-        return _SENTENCE_START.fullmatch(text, line_start, start) is not None
+    prefix = _unquote(text[line_start:start])
+    if prefix.strip():
+        return _SENTENCE_START.fullmatch(prefix) is not None
     if line_start == 0:
         return True
-    prev = text[text.rfind("\n", 0, line_start - 1) + 1:line_start - 1].strip()
-    return (
-        not PLACEHOLDER.sub("", prev).strip()
-        or prev.startswith("#")
-        or prev.endswith((".", "!", "?", ":"))
-    )
+    prev = _unquote(text[text.rfind("\n", 0, line_start - 1) + 1:line_start - 1]).strip()
+    return not prev or HEADING.match(prev) is not None or prev.endswith((".", "!", "?", ":"))
 
 
 def _wrapped(text: str, match: re.Match[str]) -> bool:

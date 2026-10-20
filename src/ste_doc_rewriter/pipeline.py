@@ -8,7 +8,7 @@ from pathlib import Path
 from ste_doc_rewriter.dictionary import apply_swaps
 from ste_doc_rewriter.glossary import KINDS_EXPAND, load_entries, product_names
 from ste_doc_rewriter.lint import LintResult, Mode, lint
-from ste_doc_rewriter.protect import mask, protect, restore
+from ste_doc_rewriter.protect import protect, restore
 
 
 @dataclass
@@ -33,7 +33,7 @@ def rewrite(
 
     protected = protect(text, product_names=product_names(entries))
     swapped, applied = apply_swaps(protected.text, swaps)
-    lint_result = lint(mask(swapped, protected.spans), mode=mode, glossary=entries)
+    lint_result = lint(swapped, mode=mode, glossary=entries)
     return RewriteResult(
         text=restore(swapped, protected.spans),
         expansions_applied=applied,
@@ -49,4 +49,4 @@ def lint_text(
 ) -> LintResult:
     entries = load_entries(glossary_dir)
     protected = protect(text, product_names=product_names(entries))
-    return lint(mask(protected.text, protected.spans), mode=mode, glossary=entries)
+    return lint(protected.text, mode=mode, glossary=entries)

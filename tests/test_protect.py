@@ -1,6 +1,6 @@
 """Protect / restore round-trips."""
 
-from ste_doc_rewriter.protect import mask, protect, restore
+from ste_doc_rewriter.protect import protect, restore
 
 
 def test_code_url_flag_path_number_round_trip():
@@ -36,9 +36,16 @@ def test_markdown_link_target_protected():
     assert restore(result.text, result.spans) == text
 
 
-def test_mask_keeps_line_numbers():
+def test_fenced_block_keeps_line_numbers():
     text = "Intro.\n```\na\nb\n```\nLast line."
     result = protect(text)
-    masked = mask(result.text, result.spans)
-    assert masked.count("\n") == text.count("\n")
-    assert masked.splitlines()[-1] == "Last line."
+    assert result.text.count("\n") == text.count("\n")
+    assert result.text.splitlines()[-1] == "Last line."
+    assert restore(result.text, result.spans) == text
+
+
+def test_url_leaves_sentence_period_outside():
+    text = "See https://example.com/a. Then stop."
+    result = protect(text)
+    assert result.text.endswith(". Then stop.")
+    assert restore(result.text, result.spans) == text

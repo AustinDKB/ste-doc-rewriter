@@ -7,7 +7,7 @@ from collections.abc import Iterable
 from dataclasses import dataclass, field
 from typing import Any, Literal
 
-from ste_doc_rewriter.dictionary import compile_rules, word_pattern
+from ste_doc_rewriter.dictionary import HEADING, LIST_ITEM, compile_rules, word_pattern
 from ste_doc_rewriter.glossary import (
     KIND_APPROVED,
     KIND_PROTECT,
@@ -20,8 +20,7 @@ from ste_doc_rewriter.protect import PLACEHOLDER
 Mode = Literal["descriptive", "procedure"]
 
 _SENTENCE_SPLIT = re.compile(r"(?<=[.!?])\s+")
-_HEADING = re.compile(r"#+\s*")
-_LIST_ITEM = re.compile(r"(?:[-*+]|\d{1,3}[.)])\s+")
+_FRONT_MATTER = re.compile(r"---[ \t]*\n.*?\n---[ \t]*(?:\n|$)", re.DOTALL)
 _WORD = re.compile(r"[A-Za-z0-9]+(?:'[A-Za-z]+)?")
 _PASSIVE = re.compile(
     r"\b(?:am|is|are|was|were|be|been|being)\s+"
@@ -127,25 +126,33 @@ class LintResult:
 def split_sentences(text: str) -> list[str]:
     """Join wrapped lines of a paragraph, then split on .!?.
 
-    A blank line, heading, list item or code-only line starts a new group, so a
-    heading does not join the next line. Heading and list markers ("#", "-", "1.")
-    are removed at the start of a group, so they are not sentences.
+    A blank line, list item or fenced code block (a placeholder line followed by
+    a blank line) starts a new group. A heading or table row is a group of its
+    own, so it does not join the next line. Heading and list markers ("#", "-",
+    "1.") are removed, so they are not sentences. Front matter is skipped.
 
     Pieces with no words outside protected placeholders are not sentences.
     """
+    front = _FRONT_MATTER.match(text)
+    if front:
+        text = text[front.end():]
+    lines = text.splitlines()
     current: list[str] = []
     groups = [current]
-    for raw in text.splitlines():
+    for i, raw in enumerate(lines):
         line = raw.strip()
-        heading = _HEADING.match(line)
-        item = _LIST_ITEM.match(line)
-        code_only = not PLACEHOLDER.sub("", line).strip()
-        if code_only or heading or item:
-            if heading:
-                groups.append([line[heading.end():]])
+        heading = HEADING.match(line)
+        item = LIST_ITEM.match(line)
+        alone = heading is not None or line.startswith("|")
+        block = not PLACEHOLDER.sub("", line).strip() and (
+            not line or i + 1 == len(lines) or not lines[i + 1].strip()
+        )
+        if block or alone or item:
+            if alone:
+                groups.append([line[heading.end():] if heading else line])
             current = []
             groups.append(current)
-        if code_only or heading:
+        if block or alone:
             continue
         current.append(line[item.end():] if item else line)
     out: list[str] = []
@@ -233,7 +240,7 @@ def lint(
 ) -> LintResult:
     """Run Phase-1 STE-oriented checks. Score = % sentences with zero findings.
 
-    Protected spans should already be placeholders (see protect.mask); each one
+    Protected spans should already be placeholders (see protect.protect); each one
     counts as one neutral word. The approved_vocabulary check runs only when the
     glossary has "approved" entries (a licensed list in glossary/local/).
     """
