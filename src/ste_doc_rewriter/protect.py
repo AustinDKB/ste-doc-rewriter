@@ -12,11 +12,13 @@ class ProtectResult:
     spans: dict[str, str] = field(default_factory=dict)
 
 
-_PLACEHOLDER = re.compile(r"\x00P(\d+)\x00")
+PLACEHOLDER = re.compile(r"\x00P(\d+)\x00")
 
 # Order matters: longer / more specific first.
 _FENCED = re.compile(r"```[\s\S]*?```")
 _INLINE = re.compile(r"`[^`\n]+`")
+# Markdown link target: the "(...)" after "]"
+_LINK_TARGET = re.compile(r"(?<=\])\([^)\n]*\)")
 _URL = re.compile(r"https?://[^\s<>\]\)\"']+")
 # Absolute or relative paths with a slash and a file-ish tail
 _PATH = re.compile(
@@ -55,7 +57,7 @@ def protect(text: str, product_names: list[str] | None = None) -> ProtectResult:
         return key
 
     out = text
-    for pattern in (_FENCED, _INLINE, _URL, _PATH, _FLAG, _NUMBER_UNIT):
+    for pattern in (_FENCED, _INLINE, _LINK_TARGET, _URL, _PATH, _FLAG, _NUMBER_UNIT):
         out = pattern.sub(stash, out)
 
     prod = _product_pattern(product_names or [])
@@ -72,4 +74,14 @@ def restore(text: str, spans: dict[str, str]) -> str:
         key = match.group(0)
         return spans.get(key, key)
 
-    return _PLACEHOLDER.sub(unstash, text)
+    return PLACEHOLDER.sub(unstash, text)
+
+
+def mask(text: str, spans: dict[str, str]) -> str:
+    """Keep placeholders for lint, plus the newlines of each span so line numbers match."""
+
+    def keep_lines(match: re.Match[str]) -> str:
+        key = match.group(0)
+        return key + "\n" * spans.get(key, "").count("\n")
+
+    return PLACEHOLDER.sub(keep_lines, text)

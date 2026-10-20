@@ -59,9 +59,10 @@
   {
     "term": "containerize",
     "replace": "put in a container",
-    "kind": "prefer",
+    "kind": "avoid",
     "pos": "verb",
     "domains": ["devops"],
-    "source_url": "https://glossary.cncf.io/"
+    "source_url": "https://glossary.cncf.io/",
+    "notes": "Object goes inside the phrase: reword the sentence; lint flags it, rewrite leaves it"
   }
 ]

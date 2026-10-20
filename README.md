@@ -54,12 +54,12 @@ uv run ste-rewrite rewrite samples/messy_ops.md
 uv run ste-rewrite rewrite samples/messy_ops.md -o /tmp/out.md --report /tmp/report.json
 
 # Optional licensed ASD dictionary overlay (gitignored):
-#   glossary/local/*.json
+#   glossary/local/*.json  ("approved" rows turn on the approved-vocabulary check)
 ```
 
 ## What Phase 1 protects
 
-Fenced/inline code, URLs, file paths, CLI flags, numbers with units, and product names from `glossary/protect.json` (plus any `kind: protect` entries).
+Fenced/inline code, URLs, markdown link targets, file paths, CLI flags, numbers with units, and product names from `glossary/protect.json` (plus any `kind: protect` entries). Lint sees each protected span as one neutral word.
 
 ## Layout
 

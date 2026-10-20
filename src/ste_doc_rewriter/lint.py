@@ -3,8 +3,18 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 from typing import Any, Literal
+
+from ste_doc_rewriter.dictionary import compile_rules, word_pattern
+from ste_doc_rewriter.glossary import (
+    KIND_APPROVED,
+    KIND_PROTECT,
+    KINDS_EXPAND,
+    KINDS_NOT_APPROVED,
+)
+from ste_doc_rewriter.protect import PLACEHOLDER
 
 
 Mode = Literal["descriptive", "procedure"]
@@ -42,6 +52,41 @@ _STOP_ING = frozenset({
     "morning", "evening", "warning", "string", "being",
 })
 
+# Noun-cluster tokens: a run breaker ("\x00") or a word.
+_BREAK = " \x00 "
+_CLUSTER_TOKEN = re.compile(r"\x00|" + _WORD.pattern)
+_PAREN_WORD = re.compile(r"\(\w+\)")
+_FUNCTION_WORDS = frozenset({
+    "a", "an", "the", "and", "or", "but", "if", "of", "to", "in", "on",
+    "for", "with", "by", "from", "as", "at", "is", "are", "was", "were",
+    "be", "been", "being", "this", "that", "these", "those", "it", "its",
+    "you", "your", "we", "our", "they", "their", "not", "can", "may",
+    "must", "should", "will", "shall", "do", "does", "did", "has", "have",
+    "had", "when", "where", "while", "after", "before", "into", "onto",
+    "over", "under", "than", "then", "also", "only", "just", "about",
+    "across", "through", "between", "within", "without", "during", "per",
+    "via", "against", "along", "around", "behind", "below", "above", "up",
+    "down", "out", "off", "so", "because", "until", "each", "every", "all",
+    "some", "any", "no", "which", "who", "what", "how", "why", "there",
+    "here", "he", "she", "him", "her", "them", "i", "me", "my", "us",
+    "could", "would", "might",
+})
+# Common verbs and adverbs in technical docs; glossary verbs are added per run.
+_COMMON_VERBS = (
+    "add", "allow", "apply", "build", "change", "check", "click", "close",
+    "configure", "copy", "create", "delete", "deploy", "disable", "enable",
+    "enter", "find", "fix", "get", "give", "go", "help", "install", "keep",
+    "let", "load", "make", "move", "need", "open", "pull", "push", "put",
+    "read", "remove", "restart", "run", "save", "see", "select", "send",
+    "set", "show", "start", "stop", "take", "try", "type", "update", "use",
+    "wait", "write",
+)
+_COMMON_ADVERBS = frozenset({
+    "now", "always", "never", "often", "again", "soon", "today", "still",
+    "already", "first", "next", "last", "too", "very", "more", "most",
+    "less", "least", "well",
+})
+
 
 @dataclass
 class Finding:
@@ -57,6 +102,7 @@ class LintResult:
     sentence_count: int
     passing_sentences: int
     findings: list[Finding] = field(default_factory=list)
+    skipped: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -72,11 +118,15 @@ class LintResult:
                 }
                 for f in self.findings
             ],
+            "skipped": self.skipped,
         }
 
 
 def split_sentences(text: str) -> list[str]:
-    """Split on newlines then .!? so markdown headings do not join the next line."""
+    """Split on newlines then .!? so markdown headings do not join the next line.
+
+    Pieces with no words outside protected placeholders (code-only lines) are not sentences.
+    """
     text = text.strip()
     if not text:
         return []
@@ -87,7 +137,9 @@ def split_sentences(text: str) -> list[str]:
             continue
         line = re.sub(r"^#+\s*", "", line)
         parts = _SENTENCE_SPLIT.split(line)
-        out.extend(p.strip() for p in parts if p.strip())
+        out.extend(
+            p.strip() for p in parts if _WORD.search(PLACEHOLDER.sub(" ", p))
+        )
     return out
 
 
@@ -111,25 +163,43 @@ def _line_of(text: str, snippet: str) -> int:
     return text[:idx].count("\n") + 1
 
 
-def _noun_cluster_hits(sentence: str) -> list[str]:
-    """Flag runs of 4+ capitalized or lowercase content words (naive)."""
-    # Tokenize; treat consecutive nouns-ish (no determiner/verb/prep) as cluster
-    # Heuristic: 4+ adjacent Title-Case or all-lowercase alpha tokens without
-    # common function words between them.
-    function = frozenset({
-        "a", "an", "the", "and", "or", "but", "if", "of", "to", "in", "on",
-        "for", "with", "by", "from", "as", "at", "is", "are", "was", "were",
-        "be", "been", "being", "this", "that", "these", "those", "it", "its",
-        "you", "your", "we", "our", "they", "their", "not", "can", "may",
-        "must", "should", "will", "shall", "do", "does", "did", "has", "have",
-        "had", "when", "where", "while", "after", "before", "into", "onto",
-        "over", "under", "than", "then", "also", "only", "just", "about",
-    })
-    tokens = _WORD.findall(sentence)
+def _verb_forms(words: Iterable[str]) -> set[str]:
+    return {form for w in words for form in (w, w + "s", w + "es")}
+
+
+_COMMON_NON_NOUNS = frozenset(
+    _FUNCTION_WORDS | _COMMON_ADVERBS | _verb_forms(_COMMON_VERBS)
+)
+
+
+def _is_non_noun(token: str, non_nouns: frozenset[str]) -> bool:
+    low = token.lower()
+    return (
+        token == "\x00"
+        or token.isdigit()
+        or low in non_nouns
+        or (len(low) > 4 and low.endswith("ly"))
+    )
+
+
+def _noun_cluster_hits(
+    sentence: str,
+    *,
+    expansions: list[re.Pattern[str]] | None = None,
+    non_nouns: frozenset[str] = _COMMON_NON_NOUNS,
+) -> list[str]:
+    """Flag runs of 4+ adjacent words that are not function words, verbs or adverbs.
+
+    Protected spans, acronym expansions ("X Y (XY)") and "(XY)" break a run.
+    """
+    masked = PLACEHOLDER.sub(_BREAK, sentence)
+    for pattern in expansions or []:
+        masked = pattern.sub(_BREAK, masked)
+    masked = _PAREN_WORD.sub(_BREAK, masked)
     clusters: list[str] = []
     run: list[str] = []
-    for tok in tokens:
-        if tok.lower() in function or tok.isdigit():
+    for tok in _CLUSTER_TOKEN.findall(masked):
+        if _is_non_noun(tok, non_nouns):
             if len(run) > 3:
                 clusters.append(" ".join(run))
             run = []
@@ -140,24 +210,48 @@ def _noun_cluster_hits(sentence: str) -> list[str]:
     return clusters
 
 
+def _words(text: str) -> set[str]:
+    return {w.lower() for w in _WORD.findall(text)}
+
+
 def lint(
     text: str,
     *,
     mode: Mode = "descriptive",
-    not_approved: list[dict[str, Any]] | None = None,
+    glossary: list[dict[str, Any]] | None = None,
 ) -> LintResult:
-    """Run Phase-1 STE-oriented checks. Score = % sentences with zero findings."""
+    """Run Phase-1 STE-oriented checks. Score = % sentences with zero findings.
+
+    Protected spans should already be placeholders (see protect.mask); each one
+    counts as one neutral word. The approved_vocabulary check runs only when the
+    glossary has "approved" entries (a licensed list in glossary/local/).
+    """
     max_words = 20 if mode == "procedure" else 25
     findings: list[Finding] = []
+    entries = glossary or []
+    banned = compile_rules(entries, KINDS_NOT_APPROVED)
+    expansions = [
+        word_pattern(e["replace"], False)
+        for e in entries if e.get("kind") in KINDS_EXPAND
+    ]
+    non_nouns = _COMMON_NON_NOUNS | _verb_forms(
+        w for e in entries if e.get("pos") in {"verb", "adverb"}
+        for w in _words(f"{e['term']} {e['replace']}")
+    )
+    approved: set[str] | None = None
+    skipped: list[str] = []
+    if any(e.get("kind") == KIND_APPROVED for e in entries):
+        approved = set().union(
+            *(_words(e["replace"]) for e in entries if e.get("kind") != KIND_PROTECT)
+        )
+    else:
+        skipped.append("approved_vocabulary")
+
     sentences = split_sentences(text)
     if not sentences:
-        return LintResult(score=100.0, sentence_count=0, passing_sentences=0)
-
-    # Build not-approved lookup
-    banned: dict[str, str] = {}
-    for entry in not_approved or []:
-        if entry.get("kind") in {"ste_swap", "prefer"}:
-            banned[entry["term"].lower()] = entry["replace"]
+        return LintResult(
+            score=100.0, sentence_count=0, passing_sentences=0, skipped=skipped,
+        )
 
     bad_sentences: set[int] = set()
 
@@ -175,15 +269,32 @@ def lint(
             ))
             bad_sentences.add(si)
 
-        # not-approved words
-        for tok in _WORD.findall(sentence):
-            key = tok.lower()
-            if key in banned:
+        # not-approved words: same patterns as the dictionary swaps
+        claimed: list[tuple[int, int]] = []
+        for entry, pattern in banned:
+            for m in pattern.finditer(sentence):
+                if any(m.start() < end and start < m.end() for start, end in claimed):
+                    continue
+                claimed.append(m.span())
                 findings.append(Finding(
                     rule="not_approved",
                     line=line,
-                    message=f"Not-approved word {tok!r}",
-                    suggestion=banned[key],
+                    message=f"Not-approved word {m.group(0)!r}",
+                    suggestion=entry["replace"],
+                ))
+                bad_sentences.add(si)
+
+        if approved is not None:
+            prose = PLACEHOLDER.sub(" ", sentence)
+            unknown = dict.fromkeys(
+                tok for tok in _WORD.findall(prose)
+                if not tok.isdigit() and tok.lower() not in approved
+            )
+            for tok in unknown:
+                findings.append(Finding(
+                    rule="approved_vocabulary",
+                    line=line,
+                    message=f"Word {tok!r} is not in the approved vocabulary",
                 ))
                 bad_sentences.add(si)
 
@@ -196,7 +307,9 @@ def lint(
             ))
             bad_sentences.add(si)
 
-        for cluster in _noun_cluster_hits(sentence):
+        for cluster in _noun_cluster_hits(
+            sentence, expansions=expansions, non_nouns=non_nouns,
+        ):
             findings.append(Finding(
                 rule="noun_cluster",
                 line=line,
@@ -241,6 +354,7 @@ def lint(
         sentence_count=len(sentences),
         passing_sentences=passing,
         findings=findings,
+        skipped=skipped,
     )
 
 
@@ -249,6 +363,11 @@ def format_text_report(result: LintResult) -> str:
         f"STE lint score: {result.score:.1f}% "
         f"({result.passing_sentences}/{result.sentence_count} sentences pass)",
     ]
+    if "approved_vocabulary" in result.skipped:
+        lines.append(
+            "Skipped approved_vocabulary: no 'approved' entries in the glossary "
+            "(add a licensed STE word list under glossary/local/)."
+        )
     if not result.findings:
         lines.append("No findings.")
         return "\n".join(lines)

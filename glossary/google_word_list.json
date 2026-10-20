@@ -17,9 +17,10 @@
   {
     "term": "allows you to",
     "replace": "you can",
-    "kind": "prefer",
+    "kind": "avoid",
     "domains": ["general"],
-    "source_url": "https://developers.google.com/style/word-list"
+    "source_url": "https://developers.google.com/style/word-list",
+    "notes": "Subject-dependent: reword the sentence; lint flags it, rewrite leaves it"
   },
   {
     "term": "as well as",
@@ -42,6 +43,14 @@
     "kind": "prefer",
     "domains": ["general"],
     "source_url": "https://developers.google.com/style/word-list"
+  },
+  {
+    "term": "enables you to",
+    "replace": "you can",
+    "kind": "avoid",
+    "domains": ["general"],
+    "source_url": "https://developers.google.com/style/word-list",
+    "notes": "Subject-dependent: reword the sentence; lint flags it, rewrite leaves it"
   },
   {
     "term": "e.g.",
@@ -109,7 +118,7 @@
     "domains": ["swe"],
     "case_sensitive": true,
     "source_url": "https://developers.google.com/style/abbreviations",
-    "notes": "Expand on first use in docs; Phase 1 expands every unprotected hit"
+    "notes": "Expand on first use in docs; Phase 1 expands the first unprotected hit only"
   },
   {
     "term": "CLI",

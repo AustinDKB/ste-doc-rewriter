@@ -351,7 +351,9 @@ Kinds:
 | `abbrev_expand` | Abbreviation → full words |
 | `acronym_expand` | Acronym → full concept (domain-tagged) |
 | `prefer` | Google-style preferred wording |
+| `avoid` | Lint flags it with `replace` as the suggestion; rewrite leaves it (needs sentence context, for example `allows you to`) |
 | `protect` | Never rewrite (product names, brands) |
+| `approved` | Approved STE word (`replace` = `term`); turns on the approved-vocabulary lint check. Only in the gitignored `glossary/local/` overlay |
 
 ### 11.3 Protect rules (planned)
 
@@ -488,5 +490,5 @@ ste-doc-rewriter/
 | Filler deletion (`please`, `simply`) | Not in Phase 1 glossary | Schema requires non-empty `replace`; empty delete would violate schema |
 | Sentence length modes | `--mode descriptive` (25) / `procedure` (20) | Spec lists both limits; default descriptive |
 | Lint score | Percent of sentences with zero findings | Matches “percent of sentences passing”; CI uses `--threshold` |
-| Identity glossary rows | Allowed for domain coverage; dictionary skips term==replace | Lets starter domain files record terms without no-op churn |
+| Identity glossary rows | Allowed for domain coverage; dictionary and lint skip term==replace | Lets starter domain files record terms without no-op churn |
 | Sentence splitting | Split on newlines (strip `#` headings) then `.!?` | Avoids markdown titles joining the next line as a false noun cluster |

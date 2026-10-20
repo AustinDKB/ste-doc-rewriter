@@ -7,7 +7,11 @@ import json
 import sys
 from pathlib import Path
 
-from ste_doc_rewriter.glossary import DEFAULT_GLOSSARY_DIR, validate_glossary_dir
+from ste_doc_rewriter.glossary import (
+    DEFAULT_GLOSSARY_DIR,
+    iter_glossary_files,
+    validate_glossary_dir,
+)
 from ste_doc_rewriter.lint import format_text_report
 from ste_doc_rewriter.pipeline import lint_text, rewrite
 
@@ -83,7 +87,7 @@ def cmd_glossary_validate(args: argparse.Namespace) -> int:
         for err in errors:
             print(f"  {err}", file=sys.stderr)
         return 1
-    n_files = len(list(root.rglob("*.json"))) if root.is_dir() else 0
+    n_files = len(iter_glossary_files(root))
     print(f"OK: {n_files} glossary file(s) under {root}")
     return 0
 
@@ -98,7 +102,7 @@ def build_parser() -> argparse.ArgumentParser:
     def add_common(sp: argparse.ArgumentParser) -> None:
         sp.add_argument(
             "-g", "--glossary",
-            help="Glossary directory (default: ./glossary)",
+            help=f"Glossary directory (default: {DEFAULT_GLOSSARY_DIR})",
         )
         sp.add_argument(
             "--mode",
@@ -156,7 +160,7 @@ def build_parser() -> argparse.ArgumentParser:
     gv_val = gv_sub.add_parser("validate", help="Validate glossary against schema")
     gv_val.add_argument(
         "-g", "--glossary",
-        help="Glossary directory (default: ./glossary)",
+        help=f"Glossary directory (default: {DEFAULT_GLOSSARY_DIR})",
     )
     gv_val.set_defaults(func=cmd_glossary_validate)
 
@@ -166,7 +170,11 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> None:
     parser = build_parser()
     args = parser.parse_args(argv)
-    code = args.func(args)
+    try:
+        code = args.func(args)
+    except (FileNotFoundError, ValueError) as err:
+        print(f"error: {err}", file=sys.stderr)
+        code = 2
     raise SystemExit(code)
 
 

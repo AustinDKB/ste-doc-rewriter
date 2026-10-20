@@ -1,4 +1,4 @@
-"""Protect → dictionary swap → restore → lint (Phase 1, no model)."""
+"""Protect → dictionary swap → lint → restore (Phase 1, no model)."""
 
 from __future__ import annotations
 
@@ -6,9 +6,9 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from ste_doc_rewriter.dictionary import apply_swaps
-from ste_doc_rewriter.glossary import load_entries, product_names, swap_entries
+from ste_doc_rewriter.glossary import KINDS_EXPAND, load_entries, product_names
 from ste_doc_rewriter.lint import LintResult, Mode, lint
-from ste_doc_rewriter.protect import protect, restore
+from ste_doc_rewriter.protect import mask, protect, restore
 
 
 @dataclass
@@ -26,20 +26,16 @@ def rewrite(
     expand_acronyms: bool = True,
 ) -> RewriteResult:
     entries = load_entries(glossary_dir)
-    products = product_names(entries)
-    swaps = swap_entries(entries)
-    if not expand_acronyms:
-        swaps = [
-            e for e in swaps
-            if e.get("kind") not in {"acronym_expand", "abbrev_expand"}
-        ]
+    swaps = [
+        e for e in entries
+        if expand_acronyms or e.get("kind") not in KINDS_EXPAND
+    ]
 
-    protected = protect(text, product_names=products)
+    protected = protect(text, product_names=product_names(entries))
     swapped, applied = apply_swaps(protected.text, swaps)
-    restored = restore(swapped, protected.spans)
-    lint_result = lint(restored, mode=mode, not_approved=swaps)
+    lint_result = lint(mask(swapped, protected.spans), mode=mode, glossary=entries)
     return RewriteResult(
-        text=restored,
+        text=restore(swapped, protected.spans),
         expansions_applied=applied,
         lint=lint_result,
     )
@@ -52,5 +48,5 @@ def lint_text(
     mode: Mode = "descriptive",
 ) -> LintResult:
     entries = load_entries(glossary_dir)
-    swaps = swap_entries(entries)
-    return lint(text, mode=mode, not_approved=swaps)
+    protected = protect(text, product_names=product_names(entries))
+    return lint(mask(protected.text, protected.spans), mode=mode, glossary=entries)

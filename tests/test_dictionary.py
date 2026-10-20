@@ -33,3 +33,37 @@ def test_skips_identity():
     out, applied = apply_swaps(text, ENTRIES)
     assert out == text
     assert not any(a.startswith("feature→") for a in applied)
+
+
+def test_preserves_case_of_match():
+    entries = [
+        {"term": "commence", "replace": "start", "kind": "ste_swap"},
+        {"term": "prior to", "replace": "before", "kind": "ste_swap"},
+    ]
+    out, _ = apply_swaps("Commence the deploy. Prior to the run, commence it.", entries)
+    assert out == "Start the deploy. Before the run, start it."
+
+
+def test_dotted_term_keeps_sentence_end():
+    entries = [
+        {"term": "etc.", "replace": "and so on", "kind": "prefer", "case_sensitive": True},
+        {"term": "e.g.", "replace": "for example", "kind": "prefer", "case_sensitive": True},
+    ]
+    out, _ = apply_swaps("Collect logs, metrics, etc. Then restart.\nUse tools, e.g. kubectl.", entries)
+    assert out == "Collect logs, metrics, and so on. Then restart.\nUse tools, for example kubectl."
+
+
+def test_acronym_expansion_is_first_use_only_and_idempotent():
+    text = "Enable CI now. The CI job runs."
+    once, applied = apply_swaps(text, ENTRIES)
+    assert once == "Enable continuous integration (CI) now. The CI job runs."
+    assert applied == ["CI→continuous integration (CI)"]
+    twice, applied_again = apply_swaps(once, ENTRIES)
+    assert twice == once
+    assert applied_again == []
+
+
+def test_avoid_kind_is_not_rewritten():
+    entries = [{"term": "allows you to", "replace": "you can", "kind": "avoid"}]
+    text = "The CI pipeline currently allows you to obtain logs."
+    assert apply_swaps(text, entries) == (text, [])
