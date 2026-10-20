@@ -131,11 +131,11 @@ class LintResult:
 def split_sentences(text: str) -> list[str]:
     """Join wrapped lines of a paragraph, then split on .!?.
 
-    A blank line, list item, rule or heading underline, or fenced code block (a
-    placeholder line followed by a blank line) starts a new group. A heading
-    (ATX or setext) or table row is a group of its own, so it does not join the
-    next line. Heading and list markers ("#", "-", "1.") are removed, so they are
-    not sentences.
+    A blank line, list item, "===" / "---" line (setext underline or rule), or
+    fenced code block (a placeholder line followed by a blank line) starts a new
+    group, so a setext title does not join the text after it. An ATX heading or
+    table row is a group of its own. Heading and list markers ("#", "-", "1.")
+    are removed, so they are not sentences.
 
     Pieces with no words outside protected placeholders are not sentences.
     """
@@ -146,13 +146,8 @@ def split_sentences(text: str) -> list[str]:
         line = raw.strip()
         heading = HEADING.match(line)
         item = LIST_ITEM.match(line)
-        rule = UNDERLINE.fullmatch(line) is not None
-        setext = (
-            bool(line) and not rule and i + 1 < len(lines)
-            and UNDERLINE.fullmatch(lines[i + 1]) is not None
-        )
-        alone = heading is not None or setext or line.startswith("|")
-        block = rule or not PLACEHOLDER.sub("", line).strip() and (
+        alone = heading is not None or line.startswith("|")
+        block = UNDERLINE.fullmatch(line) is not None or not PLACEHOLDER.sub("", line).strip() and (
             not line or i + 1 == len(lines) or not lines[i + 1].strip()
         )
         if block or alone or item:

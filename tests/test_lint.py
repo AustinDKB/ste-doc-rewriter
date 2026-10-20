@@ -226,3 +226,16 @@ def test_setext_heading_does_not_join_next_sentence():
 def test_leading_rule_is_not_front_matter():
     text = "---\n\nIntro text here.\n\nMore text.\n\n---\n\nRest of doc."
     assert split_sentences(protect(text).text) == ["Intro text here.", "More text.", "Rest of doc."]
+
+
+def test_list_item_before_rule_keeps_marker_out_of_sentences():
+    text = "1. Run the job.\n2. Stop the job.\n---\n\nBody text."
+    assert split_sentences(protect(text).text) == ["Run the job.", "Stop the job.", "Body text."]
+    assert split_sentences("Steps:\n- Run a\n-\n- Stop b") == ["Steps:", "Run a -", "Stop b"]
+
+
+def test_paragraph_before_rule_stays_one_sentence():
+    text = "The service restarts the pods when\nthe new release is ready\n---\nNext part."
+    assert split_sentences(text) == [
+        "The service restarts the pods when the new release is ready", "Next part.",
+    ]

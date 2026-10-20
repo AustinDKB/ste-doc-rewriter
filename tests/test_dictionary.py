@@ -205,3 +205,9 @@ def test_first_use_expansion_skips_front_matter_and_follows_setext_heading():
     assert swap("Open docs/README.md. API calls fail.") == (
         "Open docs/README.md. Application programming interface (API) calls fail."
     )
+
+
+def test_etc_keeps_period_before_rule():
+    entries = [{"term": "etc.", "replace": "and so on", "kind": "prefer", "case_sensitive": True}]
+    out, _ = apply_swaps("Collect logs, metrics, etc.\n---\nNext.", entries)
+    assert out == "Collect logs, metrics, and so on.\n---\nNext."

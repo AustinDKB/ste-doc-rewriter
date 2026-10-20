@@ -10,17 +10,17 @@ from ste_doc_rewriter.glossary import KINDS_SWAP
 
 # Markdown line markers (ATX heading, setext underline or rule, list item, blockquote).
 HEADING = re.compile(r"#{1,6}(?:[ \t]+|$)")
-UNDERLINE = re.compile(r"[ \t]*(?:=+|-+)[ \t]*")
+UNDERLINE = re.compile(r"[ \t]*(?:={3,}|-{3,})[ \t]*")
 LIST_ITEM = re.compile(r"(?:[-*+]|\d{1,3}[.)])[ \t]+")
 _QUOTE = re.compile(r"[ \t]*(?:>[ \t]?)*")
 
 # Only "etc." can end a sentence (after an optional ")"): before a capital or a
-# protected span, at the end of a paragraph, or before a list item.
+# protected span, at the end of a paragraph, or before a list item or rule.
 # "e.g." and "i.e." never do.
 _SENTENCE_FINAL_TERMS = frozenset({"etc."})
 _SENTENCE_BREAK = re.compile(
     r"(\)?)(?:\s+(?:[A-Z]|\x00P)|[ \t]*(?:\n[ \t]*\n|$)"
-    rf"|[ \t]*\n[ \t]*(?:{LIST_ITEM.pattern}))"
+    rf"|[ \t]*\n(?:[ \t]*(?:{LIST_ITEM.pattern})|{UNDERLINE.pattern}(?:\n|$)))"
 )
 # Line text before a match that starts a sentence: a heading or list marker,
 # or a finished sentence.
