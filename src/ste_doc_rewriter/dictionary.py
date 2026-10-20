@@ -7,6 +7,7 @@ from collections.abc import Iterable
 from typing import Any
 
 from ste_doc_rewriter.glossary import KINDS_SWAP
+from ste_doc_rewriter.protect import PLACEHOLDER
 
 # Only "etc." can end a sentence (after an optional ")"): before a capital or a
 # protected span, at the end of a paragraph, or before a list item.
@@ -16,9 +17,9 @@ _SENTENCE_BREAK = re.compile(
     r"(\)?)(?:\s+(?:[A-Z]|\x00P)|[ \t]*(?:\n[ \t]*\n|$)"
     r"|[ \t]*\n[ \t]*(?:[-*+]|\d+[.)])[ \t])"
 )
-# Line text before a match that starts a sentence: a heading or list marker,
-# or a finished sentence.
-_SENTENCE_START = re.compile(r"[ \t]*(?:#+|[-*+]|\d+[.)])[ \t]*|.*[.!?][ \t]+")
+# Line text before a match that starts a sentence: a heading, list or quote
+# marker, or a finished sentence.
+_SENTENCE_START = re.compile(r"[ \t]*(?:#+|[-*+>]|\d+[.)])[ \t]*|.*[.!?][ \t]+")
 
 
 def word_pattern(term: str, case_sensitive: bool) -> re.Pattern[str]:
@@ -60,7 +61,11 @@ def _starts_sentence(text: str, start: int) -> bool:
     if line_start == 0:
         return True
     prev = text[text.rfind("\n", 0, line_start - 1) + 1:line_start - 1].strip()
-    return not prev or prev.startswith("#") or prev.endswith((".", "!", "?", ":"))
+    return (
+        not PLACEHOLDER.sub("", prev).strip()
+        or prev.startswith("#")
+        or prev.endswith((".", "!", "?", ":"))
+    )
 
 
 def _wrapped(text: str, match: re.Match[str]) -> bool:

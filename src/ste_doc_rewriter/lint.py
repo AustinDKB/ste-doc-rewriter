@@ -20,6 +20,8 @@ from ste_doc_rewriter.protect import PLACEHOLDER
 Mode = Literal["descriptive", "procedure"]
 
 _SENTENCE_SPLIT = re.compile(r"(?<=[.!?])\s+")
+_HEADING = re.compile(r"#+\s*")
+_LIST_ITEM = re.compile(r"(?:[-*+]|\d{1,3}[.)])\s+")
 _WORD = re.compile(r"[A-Za-z0-9]+(?:'[A-Za-z]+)?")
 _PASSIVE = re.compile(
     r"\b(?:am|is|are|was|were|be|been|being)\s+"
@@ -123,22 +125,32 @@ class LintResult:
 
 
 def split_sentences(text: str) -> list[str]:
-    """Split on newlines then .!? so markdown headings do not join the next line.
+    """Join wrapped lines of a paragraph, then split on .!?.
 
-    Heading and list markers ("#", "-", "1.") are removed first, so they are not sentences.
+    A blank line, heading, list item or code-only line starts a new group, so a
+    heading does not join the next line. Heading and list markers ("#", "-", "1.")
+    are removed at the start of a group, so they are not sentences.
 
-    Pieces with no words outside protected placeholders (code-only lines) are not sentences.
+    Pieces with no words outside protected placeholders are not sentences.
     """
-    text = text.strip()
-    if not text:
-        return []
-    out: list[str] = []
-    for line in text.splitlines():
-        line = line.strip()
-        if not line:
+    current: list[str] = []
+    groups = [current]
+    for raw in text.splitlines():
+        line = raw.strip()
+        heading = _HEADING.match(line)
+        item = _LIST_ITEM.match(line)
+        code_only = not PLACEHOLDER.sub("", line).strip()
+        if code_only or heading or item:
+            if heading:
+                groups.append([line[heading.end():]])
+            current = []
+            groups.append(current)
+        if code_only or heading:
             continue
-        line = re.sub(r"^(?:#+\s*|(?:[-*+]|\d+[.)])\s+)", "", line)
-        parts = _SENTENCE_SPLIT.split(line)
+        current.append(line[item.end():] if item else line)
+    out: list[str] = []
+    for group in groups:
+        parts = _SENTENCE_SPLIT.split(" ".join(group))
         out.extend(
             p.strip() for p in parts if _WORD.search(PLACEHOLDER.sub(" ", p))
         )
@@ -155,14 +167,11 @@ def word_count(sentence: str) -> int:
 
 
 def _line_of(text: str, snippet: str) -> int:
-    """1-based line number of first occurrence of snippet (best effort)."""
-    idx = text.find(snippet)
-    if idx < 0:
-        # try first 40 chars
-        idx = text.find(snippet[:40])
-    if idx < 0:
+    """1-based line number of the first occurrence of snippet; any whitespace may wrap."""
+    found = re.search(r"\s+".join(map(re.escape, snippet.split())), text)
+    if found is None:
         return 1
-    return text[:idx].count("\n") + 1
+    return text[:found.start()].count("\n") + 1
 
 
 def _verb_forms(words: Iterable[str]) -> set[str]:

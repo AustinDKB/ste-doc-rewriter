@@ -1,6 +1,6 @@
 """Each Phase-1 lint rule."""
 
-from ste_doc_rewriter.lint import lint
+from ste_doc_rewriter.lint import lint, split_sentences
 
 
 BANNED = [{"term": "utilize", "replace": "use", "kind": "ste_swap"}]
@@ -146,3 +146,43 @@ def test_list_markers_are_not_sentences():
     numbered = lint("1. Utilize the dashboard.\n2. Utilize the console.\n- Utilize the CLI.", glossary=glossary)
     assert numbered.sentence_count == 3
     assert numbered.score == 0.0
+
+
+LONG_SENTENCE = (
+    "When the operator deploys the new release to the production cluster, the controller "
+    "checks every pod, restarts the failed ones, writes a report to the shared store and then "
+    "sends a short message to the on-call engineer before the window closes tonight."
+)
+
+
+def test_wrapped_sentence_scores_like_one_line():
+    words = LONG_SENTENCE.split()
+    wrapped = " ".join(words[:12]) + "\n" + " ".join(words[12:24]) + "\n" + " ".join(words[24:])
+    one_line = lint(LONG_SENTENCE)
+    result = lint(wrapped)
+    assert one_line.sentence_count == result.sentence_count == 1
+    assert result.score == one_line.score == 0.0
+    assert [f.rule for f in result.findings] == [f.rule for f in one_line.findings]
+    assert "sentence_length" in [f.rule for f in result.findings]
+
+
+def test_passive_split_over_line_break():
+    result = lint("The new release was\ndeployed by the team.")
+    assert any(f.rule == "passive_voice" for f in result.findings)
+
+
+def test_heading_and_list_items_start_new_groups():
+    result = lint("# Deploy the release\nUse the tool.\n1. Start the job and\n   check the status.\n2. Stop the job.")
+    assert result.sentence_count == 4
+    assert result.findings == []
+    assert split_sentences("The fix shipped in\n2024. Then it broke.") == [
+        "The fix shipped in 2024.", "Then it broke.",
+    ]
+
+
+def test_paragraph_length_counts_wrapped_sentences():
+    four = "Use the tool to start\nthe job. Check the status\nafter the run. Keep the logs\nfor a week. Stop the job\nat the end."
+    assert not [f for f in lint(four).findings if f.rule == "paragraph_length"]
+    seven = "One. Two.\nThree. Four.\nFive. Six.\nSeven."
+    hits = [f for f in lint(seven).findings if f.rule == "paragraph_length"]
+    assert [f.message for f in hits] == ["Paragraph has 7 sentences (max 6)"]

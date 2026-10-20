@@ -491,5 +491,5 @@ ste-doc-rewriter/
 | Sentence length modes | `--mode descriptive` (25) / `procedure` (20) | Spec lists both limits; default descriptive |
 | Lint score | Percent of sentences with zero findings | Matches “percent of sentences passing”; CI uses `--threshold` |
 | Identity glossary rows | Allowed for domain coverage; dictionary and lint skip term==replace | Lets starter domain files record terms without no-op churn |
-| Sentence splitting | Split on newlines (strip `#` headings) then `.!?` | Avoids markdown titles joining the next line as a false noun cluster |
+| Sentence splitting | Join wrapped lines inside a paragraph, then split on `.!?`; a heading, list item or code-only line starts a new group; strip `#` / list markers at the start of a group | A hard-wrapped sentence must count as one sentence for `sentence_length`, passive and paragraph checks; headings still do not join the next line |
 | Acronym expansion | Expand only the first unprotected hit per document; expand none when the text already has `(ACR)` | Google abbreviations guidance (first use); a second rewrite run changes nothing |

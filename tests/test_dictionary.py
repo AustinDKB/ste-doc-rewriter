@@ -155,3 +155,11 @@ def test_etc_keeps_period_before_list_item_and_after_final_paren():
     assert out == "Collect all data (logs, metrics, and so on)."
     out, _ = apply_swaps("Collect (logs, etc.)\nand send them.", entries)
     assert out == "Collect (logs, and so on)\nand send them."
+
+
+def test_first_use_expansion_capitalized_after_code_block_and_in_quote():
+    api = [{"term": "API", "replace": "application programming interface (API)", "kind": "acronym_expand", "case_sensitive": True}]
+    out, _ = apply_swaps("Run this:\n\x00P0\x00\nAPI calls fail.", api)
+    assert out == "Run this:\n\x00P0\x00\nApplication programming interface (API) calls fail."
+    out, _ = apply_swaps("> API keys rotate.", api)
+    assert out == "> Application programming interface (API) keys rotate."
