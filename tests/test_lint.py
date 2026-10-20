@@ -135,5 +135,7 @@ def test_nouns_inside_glossary_verb_phrases_still_count_as_nouns():
     ):
         result = lint(sentence, glossary=glossary)
         assert [f for f in result.findings if f.rule == "noun_cluster"], sentence
-    result = lint("Orchestrate deploy workloads cluster nodes.", glossary=glossary)
+    sentence = "Teams orchestrate workloads cluster nodes."
+    assert [f for f in lint(sentence, glossary=[]).findings if f.rule == "noun_cluster"]
+    result = lint(sentence, glossary=glossary)
     assert not [f for f in result.findings if f.rule == "noun_cluster"]

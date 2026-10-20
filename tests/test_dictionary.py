@@ -83,7 +83,7 @@ def test_etc_keeps_period_before_placeholder_and_after_paren():
     out, _ = apply_swaps("Collect logs, metrics, etc. \x00P0\x00 stores them.", entries)
     assert out == "Collect logs, metrics, and so on. \x00P0\x00 stores them."
     out, _ = apply_swaps("Collect (logs, metrics, etc.) Then restart.", entries)
-    assert out == "Collect (logs, metrics, and so on.) Then restart."
+    assert out == "Collect (logs, metrics, and so on). Then restart."
 
 
 def test_file_names_are_not_rewritten():
@@ -95,3 +95,39 @@ def test_file_names_are_not_rewritten():
     assert apply_swaps(text, entries) == (text, [])
     out, _ = apply_swaps("Ask the admin. Use the API.", entries)
     assert out == "Ask the administrator. Use the application programming interface (API)."
+
+
+def test_hard_wrapped_dotted_terms_do_not_end_the_sentence():
+    entries = [
+        {"term": "e.g.", "replace": "for example", "kind": "prefer", "case_sensitive": True},
+        {"term": "i.e.", "replace": "that is", "kind": "prefer", "case_sensitive": True},
+        {"term": "etc.", "replace": "and so on", "kind": "prefer", "case_sensitive": True},
+    ]
+    text = (
+        "Use a managed cloud such as Azure, e.g.\nGCP or AWS, for the cluster.\n"
+        "Read the docs, i.e.\nthe README, before you start.\n"
+        "Collect logs, metrics, etc.\nand send them to the store.\n\n"
+        "Collect traces, etc.\n\nNext paragraph, etc."
+    )
+    out, _ = apply_swaps(text, entries)
+    assert out == (
+        "Use a managed cloud such as Azure, for example\nGCP or AWS, for the cluster.\n"
+        "Read the docs, that is\nthe README, before you start.\n"
+        "Collect logs, metrics, and so on\nand send them to the store.\n\n"
+        "Collect traces, and so on.\n\nNext paragraph, and so on."
+    )
+
+
+def test_first_use_expansion_capitalized_at_sentence_or_heading_start():
+    api = [{"term": "API", "replace": "application programming interface (API)", "kind": "acronym_expand", "case_sensitive": True}]
+    cases = {
+        "API keys must rotate. Use the API.": "Application programming interface (API) keys must rotate. Use the API.",
+        "# API guide": "# Application programming interface (API) guide",
+        "- API keys rotate.": "- Application programming interface (API) keys rotate.",
+        "Keys rotate. API calls fail.": "Keys rotate. Application programming interface (API) calls fail.",
+        "Call the API now.": "Call the application programming interface (API) now.",
+    }
+    for text, expected in cases.items():
+        out, _ = apply_swaps(text, api)
+        assert out == expected, text
+        assert apply_swaps(out, api) == (out, [])
