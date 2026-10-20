@@ -138,11 +138,11 @@ def _sentences(text: str) -> list[tuple[str, bool]]:
     """Join wrapped lines of a paragraph, then split on .!?.
 
     A blank line, list item, "===" / "---" line (setext underline or rule),
-    admonition marker ("[!NOTE]") or fenced code block (a placeholder line followed by a blank line) starts a new
-    group, so a setext title does not join the text after it. An ATX heading or
-    table row is a group of its own. Heading and list markers ("#", "-", "1.")
-    are removed, so they are not sentences. Lines are read without their
-    blockquote markers (">").
+    admonition marker ("[!NOTE]") or fenced code block (a placeholder line
+    followed by a blank line) starts a new group, so a setext title does not
+    join the text after it. An ATX heading or table row is a group of its own.
+    Heading and list markers ("#", "-", "1.") are removed, so they are not
+    sentences. Lines are read without their blockquote markers (">").
 
     Pieces with no words outside protected placeholders are not sentences.
     Returns (sentence, prose) pairs; table-row and list-item sentences are not prose.
