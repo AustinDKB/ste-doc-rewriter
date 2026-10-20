@@ -87,7 +87,29 @@ def test_missing_glossary_dir_fails(tmp_path: Path, command: list[str], capsys):
     with pytest.raises(SystemExit) as exc:
         main(argv)
     assert exc.value.code != 0
-    assert "glossary directory not found" in capsys.readouterr().err
+    err = capsys.readouterr().err
+    assert "glossary directory not found" in err
+    assert "repo checkout" in err
+
+
+@pytest.mark.parametrize("command", [["lint"], ["rewrite"]])
+def test_schema_invalid_overlay_is_a_clean_input_error(tmp_path: Path, command: list[str], capsys):
+    glossary = tmp_path / "glossary"
+    (glossary / "local").mkdir(parents=True)
+    (glossary / "base.json").write_text(
+        '[{"term": "utilize", "replace": "use", "kind": "ste_swap"}]', encoding="utf-8"
+    )
+    (glossary / "local" / "asd.json").write_text(
+        '[{"term": "foo", "kind": "approved"}]', encoding="utf-8"
+    )
+    doc = tmp_path / "doc.md"
+    doc.write_text("Use foo now.\n", encoding="utf-8")
+    with pytest.raises(SystemExit) as exc:
+        main([*command, "-g", str(glossary), str(doc)])
+    assert exc.value.code == 2
+    err = capsys.readouterr().err
+    assert err.startswith("error: glossary failed schema validation")
+    assert "term='foo'" in err
 
 
 def test_etc_before_product_name_keeps_sentence_break():

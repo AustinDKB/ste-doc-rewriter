@@ -35,6 +35,8 @@ uv sync --extra dev
 # or: make install
 ```
 
+Phase 1 runs from a repo checkout only (`uv sync` / `uv run`, or the `make` targets). The CLI reads `glossary/` and `schemas/` from the checkout; a built wheel does not include them. Packaging them is Phase 6 (CI hook) work.
+
 ## Usage
 
 ```bash

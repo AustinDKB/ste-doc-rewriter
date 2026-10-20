@@ -22,14 +22,20 @@ DEFAULT_GLOSSARY_DIR = Path(__file__).resolve().parents[2] / "glossary"
 def load_schema(schema_path: Path | None = None) -> dict[str, Any]:
     path = schema_path or SCHEMA_PATH
     if not path.is_file():
-        raise FileNotFoundError(f"glossary schema not found: {path}")
+        raise FileNotFoundError(
+            f"glossary schema not found: {path} "
+            "(Phase 1 runs from a repo checkout: use 'uv run' there, or pass the schema path)"
+        )
     with path.open(encoding="utf-8") as f:
         return json.load(f)
 
 
 def iter_glossary_files(glossary_dir: Path) -> list[Path]:
     if not glossary_dir.is_dir():
-        raise FileNotFoundError(f"glossary directory not found: {glossary_dir}")
+        raise FileNotFoundError(
+            f"glossary directory not found: {glossary_dir} "
+            "(Phase 1 runs from a repo checkout: use 'uv run' there, or pass -g/--glossary)"
+        )
     files = sorted(glossary_dir.rglob("*.json"))
     if not files:
         raise FileNotFoundError(f"no glossary JSON files under {glossary_dir}")
@@ -38,16 +44,16 @@ def iter_glossary_files(glossary_dir: Path) -> list[Path]:
 
 def load_entries(glossary_dir: Path | None = None) -> list[dict[str, Any]]:
     root = glossary_dir or DEFAULT_GLOSSARY_DIR
+    errors = validate_glossary_dir(root)
+    if errors:
+        raise ValueError(
+            f"glossary failed schema validation ({len(errors)} error(s)): {errors[0]}; "
+            "run 'ste-rewrite glossary validate' for all"
+        )
     entries: list[dict[str, Any]] = []
     for path in iter_glossary_files(root):
         with path.open(encoding="utf-8") as f:
-            data = json.load(f)
-        if not isinstance(data, list):
-            raise ValueError(f"{path}: glossary file must be a JSON array of entries")
-        for i, item in enumerate(data):
-            if not isinstance(item, dict):
-                raise ValueError(f"{path}[{i}]: entry must be an object")
-            entries.append(item)
+            entries.extend(json.load(f))
     return entries
 
 
