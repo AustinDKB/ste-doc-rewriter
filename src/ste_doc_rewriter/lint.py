@@ -235,8 +235,8 @@ def lint(
         for e in entries if e.get("kind") in KINDS_EXPAND
     ]
     non_nouns = _COMMON_NON_NOUNS | _verb_forms(
-        w for e in entries if e.get("pos") in {"verb", "adverb"}
-        for w in _words(f"{e['term']} {e['replace']}")
+        w.lower() for e in entries if e.get("pos") in {"verb", "adverb"}
+        for w in (e["term"], e["replace"]) if _WORD.fullmatch(w)
     )
     approved: set[str] | None = None
     skipped: list[str] = []

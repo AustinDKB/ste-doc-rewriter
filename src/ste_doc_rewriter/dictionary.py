@@ -8,15 +8,18 @@ from typing import Any
 
 from ste_doc_rewriter.glossary import KINDS_SWAP
 
-# A dotted term ("etc.") followed by end of line or a capital also ends the sentence.
-_SENTENCE_END = re.compile(r"[ \t]*(?:\n|$)|\s+[A-Z]")
+# A dotted term at end of line also ends the sentence. Only "etc." can end a
+# sentence mid-line: before a capital or a protected span, also after ")".
+_LINE_END = re.compile(r"[ \t]*(?:\n|$)")
+_NEXT_SENTENCE = re.compile(r"\)?\s+(?:[A-Z]|\x00P)")
+_SENTENCE_FINAL_TERMS = frozenset({"etc."})
 
 
 def word_pattern(term: str, case_sensitive: bool) -> re.Pattern[str]:
     flags = 0 if case_sensitive else re.IGNORECASE
-    # Word-boundary-ish: don't match inside longer identifiers
+    # Word-boundary-ish: don't match inside longer identifiers or file names
     escaped = re.escape(term)
-    return re.compile(rf"(?<![\w-]){escaped}(?![\w-])", flags)
+    return re.compile(rf"(?<![\w.-]){escaped}(?![\w-]|\.\w)", flags)
 
 
 def compile_rules(
@@ -84,7 +87,11 @@ def apply_swaps(
         ) -> str:
             applied.append(f"{_term}→{_replace}")
             new = _replace if _case_sensitive else _match_case(match.group(0), _replace)
-            if _term.endswith(".") and _SENTENCE_END.match(match.string, match.end()):
+            end = match.end()
+            if _term.endswith(".") and (
+                _LINE_END.match(match.string, end)
+                or (_term in _SENTENCE_FINAL_TERMS and _NEXT_SENTENCE.match(match.string, end))
+            ):
                 new += "."
             return new
 

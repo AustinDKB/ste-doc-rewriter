@@ -67,3 +67,31 @@ def test_avoid_kind_is_not_rewritten():
     entries = [{"term": "allows you to", "replace": "you can", "kind": "avoid"}]
     text = "The CI pipeline currently allows you to obtain logs."
     assert apply_swaps(text, entries) == (text, [])
+
+
+def test_eg_ie_before_capital_do_not_gain_a_period():
+    entries = [
+        {"term": "e.g.", "replace": "for example", "kind": "prefer", "case_sensitive": True},
+        {"term": "i.e.", "replace": "that is", "kind": "prefer", "case_sensitive": True},
+    ]
+    out, _ = apply_swaps("Use a managed cloud, e.g. Azure or GCP. Pick one, i.e. The one you own.", entries)
+    assert out == "Use a managed cloud, for example Azure or GCP. Pick one, that is The one you own."
+
+
+def test_etc_keeps_period_before_placeholder_and_after_paren():
+    entries = [{"term": "etc.", "replace": "and so on", "kind": "prefer", "case_sensitive": True}]
+    out, _ = apply_swaps("Collect logs, metrics, etc. \x00P0\x00 stores them.", entries)
+    assert out == "Collect logs, metrics, and so on. \x00P0\x00 stores them."
+    out, _ = apply_swaps("Collect (logs, metrics, etc.) Then restart.", entries)
+    assert out == "Collect (logs, metrics, and so on.) Then restart."
+
+
+def test_file_names_are_not_rewritten():
+    entries = [
+        {"term": "admin", "replace": "administrator", "kind": "prefer"},
+        {"term": "API", "replace": "application programming interface (API)", "kind": "acronym_expand", "case_sensitive": True},
+    ]
+    text = "Copy admin.conf and edit API.md now."
+    assert apply_swaps(text, entries) == (text, [])
+    out, _ = apply_swaps("Ask the admin. Use the API.", entries)
+    assert out == "Ask the administrator. Use the application programming interface (API)."

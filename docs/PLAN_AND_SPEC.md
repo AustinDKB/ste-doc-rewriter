@@ -492,3 +492,4 @@ ste-doc-rewriter/
 | Lint score | Percent of sentences with zero findings | Matches “percent of sentences passing”; CI uses `--threshold` |
 | Identity glossary rows | Allowed for domain coverage; dictionary and lint skip term==replace | Lets starter domain files record terms without no-op churn |
 | Sentence splitting | Split on newlines (strip `#` headings) then `.!?` | Avoids markdown titles joining the next line as a false noun cluster |
+| Acronym expansion | Expand only the first unprotected hit per document; expand none when the text already has `(ACR)` | Google abbreviations guidance (first use); a second rewrite run changes nothing |

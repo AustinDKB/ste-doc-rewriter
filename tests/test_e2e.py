@@ -88,3 +88,9 @@ def test_missing_glossary_dir_fails(tmp_path: Path, command: list[str], capsys):
         main(argv)
     assert exc.value.code != 0
     assert "glossary directory not found" in capsys.readouterr().err
+
+
+def test_etc_before_product_name_keeps_sentence_break():
+    result = rewrite("Collect logs, metrics, etc. Kubernetes stores them.", glossary_dir=GLOSSARY)
+    assert result.text == "Collect logs, metrics, and so on. Kubernetes stores them."
+    assert result.lint.sentence_count == 2

@@ -122,3 +122,18 @@ def test_approved_vocabulary_flags_unknown_words():
     hits = [f for f in result.findings if f.rule == "approved_vocabulary"]
     assert [f.message for f in hits] == ["Word 'gizmo' is not in the approved vocabulary"]
     assert result.score == 50.0
+
+
+def test_nouns_inside_glossary_verb_phrases_still_count_as_nouns():
+    glossary = [
+        {"term": "containerize", "replace": "put in a container", "kind": "avoid", "pos": "verb"},
+        {"term": "orchestrate", "replace": "control and coordinate", "kind": "ste_swap", "pos": "verb"},
+    ]
+    for sentence in (
+        "Pull the container image registry mirror.",
+        "Check the access control policy rule.",
+    ):
+        result = lint(sentence, glossary=glossary)
+        assert [f for f in result.findings if f.rule == "noun_cluster"], sentence
+    result = lint("Orchestrate deploy workloads cluster nodes.", glossary=glossary)
+    assert not [f for f in result.findings if f.rule == "noun_cluster"]

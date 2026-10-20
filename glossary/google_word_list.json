@@ -118,7 +118,7 @@
     "domains": ["swe"],
     "case_sensitive": true,
     "source_url": "https://developers.google.com/style/abbreviations",
-    "notes": "Expand on first use in docs; Phase 1 expands the first unprotected hit only"
+    "notes": "Expand on first use in docs; Phase 1 expands only the first unprotected hit, and none when the text already has (API)"
   },
   {
     "term": "CLI",
