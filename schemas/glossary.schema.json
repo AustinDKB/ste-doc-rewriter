@@ -18,7 +18,7 @@
     },
     "kind": {
       "type": "string",
-      "enum": ["ste_swap", "abbrev_expand", "acronym_expand", "prefer", "protect"]
+      "enum": ["ste_swap", "abbrev_expand", "acronym_expand", "prefer", "avoid", "protect", "approved"]
     },
     "pos": {
       "type": "string",

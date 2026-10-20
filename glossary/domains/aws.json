@@ -1,0 +1,58 @@
+[
+  {
+    "term": "EC2",
+    "replace": "Elastic Compute Cloud (EC2)",
+    "kind": "acronym_expand",
+    "domains": ["devops"],
+    "case_sensitive": true,
+    "source_url": "https://docs.aws.amazon.com/general/latest/gr/glos-chap.html"
+  },
+  {
+    "term": "S3",
+    "replace": "Simple Storage Service (S3)",
+    "kind": "acronym_expand",
+    "domains": ["devops"],
+    "case_sensitive": true,
+    "source_url": "https://docs.aws.amazon.com/general/latest/gr/glos-chap.html"
+  },
+  {
+    "term": "IAM",
+    "replace": "Identity and Access Management (IAM)",
+    "kind": "acronym_expand",
+    "domains": ["devops"],
+    "case_sensitive": true,
+    "source_url": "https://docs.aws.amazon.com/general/latest/gr/glos-chap.html"
+  },
+  {
+    "term": "VPC",
+    "replace": "virtual private cloud (VPC)",
+    "kind": "acronym_expand",
+    "domains": ["devops"],
+    "case_sensitive": true,
+    "source_url": "https://docs.aws.amazon.com/general/latest/gr/glos-chap.html"
+  },
+  {
+    "term": "ARN",
+    "replace": "Amazon Resource Name (ARN)",
+    "kind": "acronym_expand",
+    "domains": ["devops"],
+    "case_sensitive": true,
+    "source_url": "https://docs.aws.amazon.com/general/latest/gr/glos-chap.html"
+  },
+  {
+    "term": "AZ",
+    "replace": "Availability Zone (AZ)",
+    "kind": "acronym_expand",
+    "domains": ["devops"],
+    "case_sensitive": true,
+    "source_url": "https://docs.aws.amazon.com/general/latest/gr/glos-chap.html"
+  },
+  {
+    "term": "EKS",
+    "replace": "Elastic Kubernetes Service (EKS)",
+    "kind": "acronym_expand",
+    "domains": ["devops"],
+    "case_sensitive": true,
+    "source_url": "https://docs.aws.amazon.com/general/latest/gr/glos-chap.html"
+  }
+]

@@ -1,0 +1,110 @@
+[
+  {
+    "term": "Kubernetes",
+    "replace": "Kubernetes",
+    "kind": "protect",
+    "domains": ["devops"],
+    "case_sensitive": true,
+    "source_url": "https://glossary.cncf.io/",
+    "notes": "Product name — never rewrite"
+  },
+  {
+    "term": "Docker",
+    "replace": "Docker",
+    "kind": "protect",
+    "domains": ["devops"],
+    "case_sensitive": true,
+    "source_url": "https://glossary.cncf.io/"
+  },
+  {
+    "term": "GitHub",
+    "replace": "GitHub",
+    "kind": "protect",
+    "domains": ["swe"],
+    "case_sensitive": true,
+    "source_url": "https://github.com/",
+    "notes": "Product name"
+  },
+  {
+    "term": "GitLab",
+    "replace": "GitLab",
+    "kind": "protect",
+    "domains": ["swe"],
+    "case_sensitive": true,
+    "source_url": "https://about.gitlab.com/"
+  },
+  {
+    "term": "Linux",
+    "replace": "Linux",
+    "kind": "protect",
+    "domains": ["swe"],
+    "case_sensitive": true,
+    "source_url": "https://www.kernel.org/"
+  },
+  {
+    "term": "Python",
+    "replace": "Python",
+    "kind": "protect",
+    "domains": ["swe"],
+    "case_sensitive": true,
+    "source_url": "https://www.python.org/"
+  },
+  {
+    "term": "Prometheus",
+    "replace": "Prometheus",
+    "kind": "protect",
+    "domains": ["devops"],
+    "case_sensitive": true,
+    "source_url": "https://glossary.cncf.io/"
+  },
+  {
+    "term": "Terraform",
+    "replace": "Terraform",
+    "kind": "protect",
+    "domains": ["devops"],
+    "case_sensitive": true,
+    "source_url": "https://www.hashicorp.com/products/terraform"
+  },
+  {
+    "term": "OpenTelemetry",
+    "replace": "OpenTelemetry",
+    "kind": "protect",
+    "domains": ["devops"],
+    "case_sensitive": true,
+    "source_url": "https://glossary.cncf.io/"
+  },
+  {
+    "term": "Amazon Web Services",
+    "replace": "Amazon Web Services",
+    "kind": "protect",
+    "domains": ["devops"],
+    "case_sensitive": true,
+    "source_url": "https://docs.aws.amazon.com/general/latest/gr/glos-chap.html"
+  },
+  {
+    "term": "AWS",
+    "replace": "AWS",
+    "kind": "protect",
+    "domains": ["devops"],
+    "case_sensitive": true,
+    "source_url": "https://docs.aws.amazon.com/general/latest/gr/glos-chap.html",
+    "notes": "Brand acronym treated as product name in Phase 1"
+  },
+  {
+    "term": "NIST",
+    "replace": "NIST",
+    "kind": "protect",
+    "domains": ["other"],
+    "case_sensitive": true,
+    "source_url": "https://csrc.nist.gov/glossary"
+  },
+  {
+    "term": "Qwen",
+    "replace": "Qwen",
+    "kind": "protect",
+    "domains": ["other"],
+    "case_sensitive": true,
+    "source_url": "https://qwenlm.github.io/",
+    "notes": "Model family name in this project's plan"
+  }
+]

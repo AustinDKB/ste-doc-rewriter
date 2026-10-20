@@ -2,7 +2,7 @@
 
 **Repo:** `ste-doc-rewriter`  
 **Date:** 2026-10-03  
-**Status:** Planned (not yet implemented)  
+**Status:** Phase 1 implemented (dictionary + protect + lint CLI; no model)  
 **Owner intent:** Offload STE100 + Google style documentation rewrites from subscription LLM tokens onto a small specialist model + dictionary + linter.
 
 ---
@@ -351,7 +351,9 @@ Kinds:
 | `abbrev_expand` | Abbreviation → full words |
 | `acronym_expand` | Acronym → full concept (domain-tagged) |
 | `prefer` | Google-style preferred wording |
+| `avoid` | Lint flags it with `replace` as the suggestion; rewrite leaves it (needs sentence context, for example `allows you to`) |
 | `protect` | Never rewrite (product names, brands) |
+| `approved` | Approved STE word (`replace` = `term`); turns on the approved-vocabulary lint check. Only in the gitignored `glossary/local/` overlay |
 
 ### 11.3 Protect rules (planned)
 
@@ -414,31 +416,38 @@ jobs:
       - upload rewritten artifact / optional PR comment
 ```
 
-### 11.7 Repo layout (planned after implementation)
+### 11.7 Repo layout (Phase 1 + planned later)
 
 ```text
 ste-doc-rewriter/
   README.md
+  SOURCES.md                     # source licenses (ASD dict not redistributed)
   docs/PLAN_AND_SPEC.md          # this document
   schemas/glossary.schema.json
-  data/
+  pyproject.toml                 # ste-rewrite CLI entry point
+  Makefile
+  samples/                       # small docs for lint / rewrite checks
+  data/                          # Phase 2+
     gold/                        # 500–1000 human pairs
     train.jsonl
     holdout.jsonl
   glossary/
-    ste.json
-    domains/*.json
+    ste.json                     # plain-language / STE-aligned swaps (not ASD text)
+    google_word_list.json
     protect.json
-  src/
+    domains/*.json
+    local/                       # gitignored optional licensed STE overlay
+  src/ste_doc_rewriter/
     protect.py
     dictionary.py
-    rewrite_client.py
     lint.py
+    glossary.py
     pipeline.py
-  train/
+    cli.py
+  train/                         # Phase 4
     sft_config.yaml
     prepare_jsonl.py
-  ci/
+  ci/                            # Phase 6
     ste-rewrite.yml
 ```
 
@@ -476,3 +485,12 @@ ste-doc-rewriter/
 | Messiness mix | 40/40/20 ultra/mid/near | Robustness across real inputs |
 | Inference | Cloud/API CI first | Continuous / bulk load |
 | Public repo name | `ste-doc-rewriter` | Clear product intent |
+| Phase 1 package layout | `src/ste_doc_rewriter/` + `ste-rewrite` CLI (argparse) | Spec asked for a Python package + CLI; hatchling/uv is enough |
+| STE dictionary in git | Starter plain-language / STE-aligned swaps only; full ASD dict via `glossary/local/` (gitignored) | Public repo must not redistribute copyrighted ASD dictionary text |
+| Filler deletion (`please`, `simply`) | Not in Phase 1 glossary | Schema requires non-empty `replace`; empty delete would violate schema |
+| Sentence length modes | `--mode descriptive` (25) / `procedure` (20) | Spec lists both limits; default descriptive |
+| Lint score | Percent of sentences with zero findings | Matches “percent of sentences passing”; CI uses `--threshold` |
+| Identity glossary rows | Allowed for domain coverage; dictionary and lint skip term==replace | Lets starter domain files record terms without no-op churn |
+| Sentence splitting | Join wrapped lines inside a paragraph, then split on `.!?`; an ATX heading, list item, table row, `===` / `---` line (setext underline or rule), admonition marker (`[!NOTE]`) or fenced code block starts a new group (inline code on its own line does not); lines are read without their blockquote markers (`>`); front matter is protected as one span; strip `#` / list markers at the start of a group | A hard-wrapped sentence must count as one sentence for `sentence_length`, passive and paragraph checks; headings still do not join the next line |
+| Paragraph length | Max 6 sentences per paragraph, counting only prose sentences; table rows and list items (procedure steps too) do not count, but keep their other checks | The STE paragraph limit applies to descriptive prose; a long table or step list is not a long paragraph |
+| Acronym expansion | Expand only the first unprotected hit per document; expand none when the text already has `(ACR)` | Google abbreviations guidance (first use); a second rewrite run changes nothing |

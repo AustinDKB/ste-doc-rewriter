@@ -1,0 +1,147 @@
+[
+  {
+    "term": "abort",
+    "replace": "stop",
+    "kind": "prefer",
+    "domains": ["general"],
+    "source_url": "https://developers.google.com/style/word-list",
+    "notes": "Google style prefer/avoid fact"
+  },
+  {
+    "term": "admin",
+    "replace": "administrator",
+    "kind": "prefer",
+    "domains": ["swe"],
+    "source_url": "https://developers.google.com/style/word-list"
+  },
+  {
+    "term": "allows you to",
+    "replace": "you can",
+    "kind": "avoid",
+    "domains": ["general"],
+    "source_url": "https://developers.google.com/style/word-list",
+    "notes": "Subject-dependent: reword the sentence; lint flags it, rewrite leaves it"
+  },
+  {
+    "term": "as well as",
+    "replace": "and",
+    "kind": "prefer",
+    "domains": ["general"],
+    "source_url": "https://developers.google.com/style/word-list"
+  },
+  {
+    "term": "currently",
+    "replace": "now",
+    "kind": "prefer",
+    "domains": ["general"],
+    "source_url": "https://developers.google.com/style/word-list",
+    "notes": "Omit when obvious; otherwise prefer now"
+  },
+  {
+    "term": "desire",
+    "replace": "want",
+    "kind": "prefer",
+    "domains": ["general"],
+    "source_url": "https://developers.google.com/style/word-list"
+  },
+  {
+    "term": "enables you to",
+    "replace": "you can",
+    "kind": "avoid",
+    "domains": ["general"],
+    "source_url": "https://developers.google.com/style/word-list",
+    "notes": "Subject-dependent: reword the sentence; lint flags it, rewrite leaves it"
+  },
+  {
+    "term": "e.g.",
+    "replace": "for example",
+    "kind": "prefer",
+    "domains": ["general"],
+    "case_sensitive": true,
+    "source_url": "https://developers.google.com/style/word-list"
+  },
+  {
+    "term": "etc.",
+    "replace": "and so on",
+    "kind": "prefer",
+    "domains": ["general"],
+    "case_sensitive": true,
+    "source_url": "https://developers.google.com/style/word-list"
+  },
+  {
+    "term": "i.e.",
+    "replace": "that is",
+    "kind": "prefer",
+    "domains": ["general"],
+    "case_sensitive": true,
+    "source_url": "https://developers.google.com/style/word-list"
+  },
+  {
+    "term": "in order to",
+    "replace": "to",
+    "kind": "prefer",
+    "domains": ["general"],
+    "source_url": "https://developers.google.com/style/word-list"
+  },
+  {
+    "term": "utilize",
+    "replace": "use",
+    "kind": "prefer",
+    "domains": ["general"],
+    "source_url": "https://developers.google.com/style/word-list"
+  },
+  {
+    "term": "via",
+    "replace": "through",
+    "kind": "prefer",
+    "domains": ["general"],
+    "source_url": "https://developers.google.com/style/word-list"
+  },
+  {
+    "term": "whether or not",
+    "replace": "whether",
+    "kind": "prefer",
+    "domains": ["general"],
+    "source_url": "https://developers.google.com/style/word-list"
+  },
+  {
+    "term": "wish",
+    "replace": "want",
+    "kind": "prefer",
+    "domains": ["general"],
+    "source_url": "https://developers.google.com/style/word-list"
+  },
+  {
+    "term": "API",
+    "replace": "application programming interface (API)",
+    "kind": "acronym_expand",
+    "domains": ["swe"],
+    "case_sensitive": true,
+    "source_url": "https://developers.google.com/style/abbreviations",
+    "notes": "Expand on first use in docs; Phase 1 expands only the first unprotected hit, and none when the text already has (API)"
+  },
+  {
+    "term": "CLI",
+    "replace": "command-line interface (CLI)",
+    "kind": "acronym_expand",
+    "domains": ["swe"],
+    "case_sensitive": true,
+    "source_url": "https://developers.google.com/style/abbreviations"
+  },
+  {
+    "term": "UI",
+    "replace": "user interface (UI)",
+    "kind": "acronym_expand",
+    "domains": ["design"],
+    "case_sensitive": true,
+    "source_url": "https://developers.google.com/style/abbreviations"
+  },
+  {
+    "term": "URL",
+    "replace": "uniform resource locator (URL)",
+    "kind": "acronym_expand",
+    "domains": ["swe"],
+    "case_sensitive": true,
+    "source_url": "https://developers.google.com/style/abbreviations"
+  }
+]
