@@ -169,6 +169,7 @@ def test_first_use_expansion_capitalized_after_code_block_and_in_quote():
         "Run this:\n```\nmake build\n```\nApplication programming interface (API) calls fail."
     )
     assert swap("> API keys rotate.") == "> Application programming interface (API) keys rotate."
+    assert swap("> [!NOTE]\n> API keys rotate.") == "> [!NOTE]\n> Application programming interface (API) keys rotate."
     assert swap("Run `make build`.\nAPI calls fail.") == (
         "Run `make build`.\nApplication programming interface (API) calls fail."
     )
@@ -218,5 +219,11 @@ def test_etc_keeps_period_before_rule_heading_and_table_row():
     assert out == "Collect logs, and so on.\n| a | b |"
     out, _ = apply_swaps("> Collect logs, etc.\n> - Send traces.\n> Keep logs, etc.\n>\n> next.", entries)
     assert out == "> Collect logs, and so on.\n> - Send traces.\n> Keep logs, and so on.\n>\n> next."
+    out, _ = apply_swaps("> - Collect logs, etc.\n>   Then restart.\n> 1. Keep logs, etc.\n>   - Send traces.", entries)
+    assert out == "> - Collect logs, and so on.\n>   Then restart.\n> 1. Keep logs, and so on.\n>   - Send traces."
+    out, _ = apply_swaps("> Keep logs, etc.\n>", entries)
+    assert out == "> Keep logs, and so on.\n>"
+    out, _ = apply_swaps("Keep logs, etc.\n> [!NOTE]\n> Read this.", entries)
+    assert out == "Keep logs, and so on.\n> [!NOTE]\n> Read this."
     out, _ = apply_swaps("Collect logs, etc.\n#123 fixed it.", entries)
     assert out == "Collect logs, and so on\n#123 fixed it."

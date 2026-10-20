@@ -8,20 +8,23 @@ from typing import Any
 
 from ste_doc_rewriter.glossary import KINDS_SWAP
 
-# Markdown line markers (ATX heading, setext underline or rule, list item, blockquote).
+# Markdown line markers (ATX heading, setext underline or rule, list item,
+# GitHub admonition such as "[!NOTE]", blockquote).
 HEADING = re.compile(r"#{1,6}(?:[ \t]+|$)")
 UNDERLINE = re.compile(r"[ \t]*(?:={3,}|-{3,})[ \t]*")
 LIST_ITEM = re.compile(r"(?:[-*+]|\d{1,3}[.)])[ \t]+")
-_QUOTE = re.compile(r"[ \t]*(?:>[ \t]?)*")
+ADMONITION = re.compile(r"\[![A-Za-z]+\]")
+_QUOTE = re.compile(r"[ \t]*(?:>[ \t]*)*")
 
 # Only "etc." can end a sentence (after an optional ")"): before a capital or a
 # protected span, at the end of a paragraph, or before a list item, heading,
-# table row or rule (inside a blockquote too).
+# table row, admonition or rule (inside a blockquote too).
 # "e.g." and "i.e." never do.
 _SENTENCE_FINAL_TERMS = frozenset({"etc."})
 _SENTENCE_BREAK = re.compile(
-    rf"(\)?)(?:\s+(?:>[ \t]?)*(?:[A-Z]|\x00P)|[ \t]*(?:\n{_QUOTE.pattern}\n|$)"
-    rf"|[ \t]*\n{_QUOTE.pattern}(?:{LIST_ITEM.pattern}|{HEADING.pattern}|\||{UNDERLINE.pattern}(?:\n|$)))"
+    rf"(\)?)(?:\s+(?:>[ \t]*)*(?:[A-Z]|\x00P)|[ \t]*(?:\n{_QUOTE.pattern}(?:\n|$)|$)"
+    rf"|[ \t]*\n{_QUOTE.pattern}(?:{LIST_ITEM.pattern}|{HEADING.pattern}|\|"
+    rf"|(?:{UNDERLINE.pattern}|{ADMONITION.pattern}[ \t]*)(?:\n|$)))"
 )
 # Line text before a match that starts a sentence: a heading or list marker,
 # or a finished sentence.
@@ -69,7 +72,8 @@ def unquote(line: str) -> str:
 def _starts_sentence(text: str, start: int) -> bool:
     """A match starts a sentence after a heading or list marker or a finished
     sentence on its line; at the start of a line (inside a blockquote too) when
-    the line before is blank, a heading, table row or underline, or ends a sentence."""
+    the line before is blank, a heading, table row, underline or admonition, or
+    ends a sentence."""
     line_start = text.rfind("\n", 0, start) + 1
     prefix = unquote(text[line_start:start])
     if prefix.strip():
@@ -81,6 +85,7 @@ def _starts_sentence(text: str, start: int) -> bool:
         not prev
         or HEADING.match(prev) is not None
         or UNDERLINE.fullmatch(prev) is not None
+        or ADMONITION.fullmatch(prev) is not None
         or prev.startswith("|")
         or prev.endswith((".", "!", "?", ":"))
     )

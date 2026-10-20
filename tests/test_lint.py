@@ -198,7 +198,10 @@ def test_paragraph_length_skips_table_rows_and_list_items():
         result = lint(text)
         assert not [f for f in result.findings if f.rule == "paragraph_length"], text
         assert result.score == 100.0, text
-    assert split_sentences(quoted(table))[:3] == ["[!NOTE] Set these keys.", "| Key | Value |", "| key0 | 0 |"]
+    assert split_sentences(quoted(table))[:3] == ["Set these keys.", "| Key | Value |", "| key0 | 0 |"]
+    assert split_sentences("> [!TIP]\n>\n> Use the tool.") == ["Use the tool."]
+    note = lint("> [!IMPORTANT]\n> Production cluster nodes need restarts.")
+    assert (note.score, note.sentence_count) == (100.0, 1)
     long_item = "Set these keys:\n- Set the key that the job reads " + "and the key " * 10 + "now."
     assert [f.rule for f in lint(long_item).findings] == ["sentence_length"]
 

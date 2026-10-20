@@ -8,6 +8,7 @@ from dataclasses import dataclass, field
 from typing import Any, Literal
 
 from ste_doc_rewriter.dictionary import (
+    ADMONITION,
     HEADING,
     LIST_ITEM,
     UNDERLINE,
@@ -136,8 +137,8 @@ def split_sentences(text: str) -> list[str]:
 def _sentences(text: str) -> list[tuple[str, bool]]:
     """Join wrapped lines of a paragraph, then split on .!?.
 
-    A blank line, list item, "===" / "---" line (setext underline or rule), or
-    fenced code block (a placeholder line followed by a blank line) starts a new
+    A blank line, list item, "===" / "---" line (setext underline or rule),
+    admonition marker ("[!NOTE]") or fenced code block (a placeholder line followed by a blank line) starts a new
     group, so a setext title does not join the text after it. An ATX heading or
     table row is a group of its own. Heading and list markers ("#", "-", "1.")
     are removed, so they are not sentences. Lines are read without their
@@ -153,7 +154,7 @@ def _sentences(text: str) -> list[tuple[str, bool]]:
         heading = HEADING.match(line)
         item = LIST_ITEM.match(line)
         alone = heading is not None or line.startswith("|")
-        block = UNDERLINE.fullmatch(line) is not None or not PLACEHOLDER.sub("", line).strip() and (
+        block = UNDERLINE.fullmatch(line) or ADMONITION.fullmatch(line) or not PLACEHOLDER.sub("", line).strip() and (
             not line or i + 1 == len(lines) or not lines[i + 1]
         )
         if block or alone or item:
