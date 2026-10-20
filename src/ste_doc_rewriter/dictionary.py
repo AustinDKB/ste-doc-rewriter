@@ -16,12 +16,12 @@ _QUOTE = re.compile(r"[ \t]*(?:>[ \t]?)*")
 
 # Only "etc." can end a sentence (after an optional ")"): before a capital or a
 # protected span, at the end of a paragraph, or before a list item, heading,
-# table row or rule.
+# table row or rule (inside a blockquote too).
 # "e.g." and "i.e." never do.
 _SENTENCE_FINAL_TERMS = frozenset({"etc."})
 _SENTENCE_BREAK = re.compile(
-    r"(\)?)(?:\s+(?:[A-Z]|\x00P)|[ \t]*(?:\n[ \t]*\n|$)"
-    rf"|[ \t]*\n(?:[ \t]*(?:{LIST_ITEM.pattern}|{HEADING.pattern}|\|)|{UNDERLINE.pattern}(?:\n|$)))"
+    rf"(\)?)(?:\s+(?:>[ \t]?)*(?:[A-Z]|\x00P)|[ \t]*(?:\n{_QUOTE.pattern}\n|$)"
+    rf"|[ \t]*\n{_QUOTE.pattern}(?:{LIST_ITEM.pattern}|{HEADING.pattern}|\||{UNDERLINE.pattern}(?:\n|$)))"
 )
 # Line text before a match that starts a sentence: a heading or list marker,
 # or a finished sentence.
@@ -62,7 +62,7 @@ def _match_case(found: str, replace: str) -> str:
     return replace
 
 
-def _unquote(line: str) -> str:
+def unquote(line: str) -> str:
     return line[_QUOTE.match(line).end():]
 
 
@@ -71,12 +71,12 @@ def _starts_sentence(text: str, start: int) -> bool:
     sentence on its line; at the start of a line (inside a blockquote too) when
     the line before is blank, a heading, table row or underline, or ends a sentence."""
     line_start = text.rfind("\n", 0, start) + 1
-    prefix = _unquote(text[line_start:start])
+    prefix = unquote(text[line_start:start])
     if prefix.strip():
         return _SENTENCE_START.fullmatch(prefix) is not None
     if line_start == 0:
         return True
-    prev = _unquote(text[text.rfind("\n", 0, line_start - 1) + 1:line_start - 1]).strip()
+    prev = unquote(text[text.rfind("\n", 0, line_start - 1) + 1:line_start - 1]).strip()
     return (
         not prev
         or HEADING.match(prev) is not None

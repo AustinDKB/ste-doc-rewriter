@@ -12,6 +12,7 @@ from ste_doc_rewriter.dictionary import (
     LIST_ITEM,
     UNDERLINE,
     compile_rules,
+    unquote,
     word_pattern,
 )
 from ste_doc_rewriter.glossary import (
@@ -139,21 +140,21 @@ def _sentences(text: str) -> list[tuple[str, bool]]:
     fenced code block (a placeholder line followed by a blank line) starts a new
     group, so a setext title does not join the text after it. An ATX heading or
     table row is a group of its own. Heading and list markers ("#", "-", "1.")
-    are removed, so they are not sentences.
+    are removed, so they are not sentences. Lines are read without their
+    blockquote markers (">").
 
     Pieces with no words outside protected placeholders are not sentences.
     Returns (sentence, prose) pairs; table-row and list-item sentences are not prose.
     """
-    lines = text.splitlines()
+    lines = [unquote(raw).strip() for raw in text.splitlines()]
     current: list[str] = []
     groups = [(current, True)]
-    for i, raw in enumerate(lines):
-        line = raw.strip()
+    for i, line in enumerate(lines):
         heading = HEADING.match(line)
         item = LIST_ITEM.match(line)
         alone = heading is not None or line.startswith("|")
         block = UNDERLINE.fullmatch(line) is not None or not PLACEHOLDER.sub("", line).strip() and (
-            not line or i + 1 == len(lines) or not lines[i + 1].strip()
+            not line or i + 1 == len(lines) or not lines[i + 1]
         )
         if block or alone or item:
             if alone:
@@ -173,7 +174,7 @@ def _sentences(text: str) -> list[tuple[str, bool]]:
 
 
 def split_paragraphs(text: str) -> list[str]:
-    blocks = re.split(r"\n\s*\n", text.strip())
+    blocks = re.split(r"\n[\s>]*\n", text.strip())
     return [b.strip() for b in blocks if b.strip()]
 
 
@@ -182,8 +183,9 @@ def word_count(sentence: str) -> int:
 
 
 def _line_of(text: str, snippet: str) -> int:
-    """1-based line number of the first occurrence of snippet; any whitespace may wrap."""
-    found = re.search(r"\s+".join(map(re.escape, snippet.split())), text)
+    """1-based line number of the first occurrence of snippet; it may wrap across
+    lines and blockquote markers."""
+    found = re.search(r"[\s>]+".join(map(re.escape, snippet.split())), text)
     if found is None:
         return 1
     return text[:found.start()].count("\n") + 1

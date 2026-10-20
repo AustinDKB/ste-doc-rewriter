@@ -193,10 +193,12 @@ def test_paragraph_length_skips_table_rows_and_list_items():
     rows = "".join(f"| key{i} | {i} |\n" for i in range(7))
     table = f"Set these keys.\n| Key | Value |\n|---|---|\n{rows}The job reads them."
     items = "Set these keys:\n" + "".join(f"- Set key {c}.\n" for c in "abcdefg")
-    for text in (table, items):
+    quoted = lambda t: "> [!NOTE]\n" + "".join(f"> {line}\n" for line in t.splitlines())
+    for text in (table, items, quoted(table), quoted(items)):
         result = lint(text)
         assert not [f for f in result.findings if f.rule == "paragraph_length"], text
         assert result.score == 100.0, text
+    assert split_sentences(quoted(table))[:3] == ["[!NOTE] Set these keys.", "| Key | Value |", "| key0 | 0 |"]
     long_item = "Set these keys:\n- Set the key that the job reads " + "and the key " * 10 + "now."
     assert [f.rule for f in lint(long_item).findings] == ["sentence_length"]
 

@@ -216,5 +216,7 @@ def test_etc_keeps_period_before_rule_heading_and_table_row():
     assert out == "Collect logs, and so on.\n# Next\nBody."
     out, _ = apply_swaps("Collect logs, etc.\n| a | b |", entries)
     assert out == "Collect logs, and so on.\n| a | b |"
+    out, _ = apply_swaps("> Collect logs, etc.\n> - Send traces.\n> Keep logs, etc.\n>\n> next.", entries)
+    assert out == "> Collect logs, and so on.\n> - Send traces.\n> Keep logs, and so on.\n>\n> next."
     out, _ = apply_swaps("Collect logs, etc.\n#123 fixed it.", entries)
     assert out == "Collect logs, and so on\n#123 fixed it."
