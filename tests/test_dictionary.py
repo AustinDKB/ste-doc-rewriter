@@ -131,3 +131,27 @@ def test_first_use_expansion_capitalized_at_sentence_or_heading_start():
         out, _ = apply_swaps(text, api)
         assert out == expected, text
         assert apply_swaps(out, api) == (out, [])
+
+
+def test_first_use_expansion_not_capitalized_on_wrapped_lines():
+    api = [{"term": "API", "replace": "application programming interface (API)", "kind": "acronym_expand", "case_sensitive": True}]
+    cases = {
+        "The service calls the\nAPI over HTTPS.": "The service calls the\napplication programming interface (API) over HTTPS.",
+        "- Run the job and send\n  API calls to the store.": "- Run the job and send\n  application programming interface (API) calls to the store.",
+        "Rotate the keys.\nAPI calls fail.": "Rotate the keys.\nApplication programming interface (API) calls fail.",
+        "# Guide\nAPI calls fail.": "# Guide\nApplication programming interface (API) calls fail.",
+        "Intro text\n\nAPI calls fail.": "Intro text\n\nApplication programming interface (API) calls fail.",
+    }
+    for text, expected in cases.items():
+        out, _ = apply_swaps(text, api)
+        assert out == expected, text
+
+
+def test_etc_keeps_period_before_list_item_and_after_final_paren():
+    entries = [{"term": "etc.", "replace": "and so on", "kind": "prefer", "case_sensitive": True}]
+    out, _ = apply_swaps("- Collect logs, metrics, etc.\n- Send traces.\n1. Keep logs, etc.\n2. Stop.", entries)
+    assert out == "- Collect logs, metrics, and so on.\n- Send traces.\n1. Keep logs, and so on.\n2. Stop."
+    out, _ = apply_swaps("Collect all data (logs, metrics, etc.)", entries)
+    assert out == "Collect all data (logs, metrics, and so on)."
+    out, _ = apply_swaps("Collect (logs, etc.)\nand send them.", entries)
+    assert out == "Collect (logs, and so on)\nand send them."

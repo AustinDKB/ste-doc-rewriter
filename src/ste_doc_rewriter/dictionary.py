@@ -8,14 +8,17 @@ from typing import Any
 
 from ste_doc_rewriter.glossary import KINDS_SWAP
 
-# Only "etc." can end a sentence: at the end of a paragraph, or before a capital
-# or a protected span (also after ")"). "e.g." and "i.e." never do.
+# Only "etc." can end a sentence (after an optional ")"): before a capital or a
+# protected span, at the end of a paragraph, or before a list item.
+# "e.g." and "i.e." never do.
 _SENTENCE_FINAL_TERMS = frozenset({"etc."})
-_PARAGRAPH_END = re.compile(r"[ \t]*(?:\n[ \t]*\n|$)")
-_NEXT_SENTENCE = re.compile(r"(\)?)\s+(?:[A-Z]|\x00P)")
-# Line text before a match that starts a sentence: nothing, a heading or list
-# marker, or a finished sentence.
-_SENTENCE_START = re.compile(r"[ \t]*(?:#+|[-*+]|\d+[.)])?[ \t]*|.*[.!?][ \t]+")
+_SENTENCE_BREAK = re.compile(
+    r"(\)?)(?:\s+(?:[A-Z]|\x00P)|[ \t]*(?:\n[ \t]*\n|$)"
+    r"|[ \t]*\n[ \t]*(?:[-*+]|\d+[.)])[ \t])"
+)
+# Line text before a match that starts a sentence: a heading or list marker,
+# or a finished sentence.
+_SENTENCE_START = re.compile(r"[ \t]*(?:#+|[-*+]|\d+[.)])[ \t]*|.*[.!?][ \t]+")
 
 
 def word_pattern(term: str, case_sensitive: bool) -> re.Pattern[str]:
@@ -51,7 +54,13 @@ def _match_case(found: str, replace: str) -> str:
 
 
 def _starts_sentence(text: str, start: int) -> bool:
-    return _SENTENCE_START.fullmatch(text, text.rfind("\n", 0, start) + 1, start) is not None
+    line_start = text.rfind("\n", 0, start) + 1
+    if text[line_start:start].strip():
+        return _SENTENCE_START.fullmatch(text, line_start, start) is not None
+    if line_start == 0:
+        return True
+    prev = text[text.rfind("\n", 0, line_start - 1) + 1:line_start - 1].strip()
+    return not prev or prev.startswith("#") or prev.endswith((".", "!", "?", ":"))
 
 
 def _wrapped(text: str, match: re.Match[str]) -> bool:
@@ -95,11 +104,11 @@ def apply_swaps(
             new = replace if case_sensitive else _match_case(match.group(0), replace)
             end = match.end()
             if term in _SENTENCE_FINAL_TERMS:
-                nxt = _NEXT_SENTENCE.match(out, end)
-                if nxt and nxt.group(1):
+                brk = _SENTENCE_BREAK.match(out, end)
+                if brk and brk.group(1):
                     new += ")."
                     end += 1
-                elif nxt or _PARAGRAPH_END.match(out, end):
+                elif brk:
                     new += "."
             parts += [out[pos:match.start()], new]
             pos = end

@@ -139,3 +139,10 @@ def test_nouns_inside_glossary_verb_phrases_still_count_as_nouns():
     assert [f for f in lint(sentence, glossary=[]).findings if f.rule == "noun_cluster"]
     result = lint(sentence, glossary=glossary)
     assert not [f for f in result.findings if f.rule == "noun_cluster"]
+
+
+def test_list_markers_are_not_sentences():
+    glossary = [{"term": "utilize", "replace": "use", "kind": "ste_swap"}]
+    numbered = lint("1. Utilize the dashboard.\n2. Utilize the console.\n- Utilize the CLI.", glossary=glossary)
+    assert numbered.sentence_count == 3
+    assert numbered.score == 0.0

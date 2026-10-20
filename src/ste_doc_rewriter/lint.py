@@ -125,6 +125,8 @@ class LintResult:
 def split_sentences(text: str) -> list[str]:
     """Split on newlines then .!? so markdown headings do not join the next line.
 
+    Heading and list markers ("#", "-", "1.") are removed first, so they are not sentences.
+
     Pieces with no words outside protected placeholders (code-only lines) are not sentences.
     """
     text = text.strip()
@@ -135,7 +137,7 @@ def split_sentences(text: str) -> list[str]:
         line = line.strip()
         if not line:
             continue
-        line = re.sub(r"^#+\s*", "", line)
+        line = re.sub(r"^(?:#+\s*|(?:[-*+]|\d+[.)])\s+)", "", line)
         parts = _SENTENCE_SPLIT.split(line)
         out.extend(
             p.strip() for p in parts if _WORD.search(PLACEHOLDER.sub(" ", p))
