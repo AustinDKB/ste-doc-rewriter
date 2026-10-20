@@ -49,3 +49,19 @@ def test_url_leaves_sentence_period_outside():
     result = protect(text)
     assert result.text.endswith(". Then stop.")
     assert restore(result.text, result.spans) == text
+
+
+def test_path_and_flag_leave_sentence_mark_outside():
+    for text in ("Open docs/README.md. Then stop.", "Set --mode=fast. Then stop.", "Edit src/app.py, then stop."):
+        result = protect(text)
+        assert result.text.endswith((". Then stop.", ", then stop.")), text
+        assert restore(result.text, result.spans) == text
+
+
+def test_front_matter_is_one_span():
+    text = "---\ntitle: API guide\ndescription: Use the API.\n---\nThe API returns JSON."
+    result = protect(text)
+    assert "API guide" not in result.text
+    assert result.text.count("\n") == text.count("\n")
+    assert result.text.endswith("The API returns JSON.")
+    assert restore(result.text, result.spans) == text

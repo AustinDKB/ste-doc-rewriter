@@ -8,8 +8,9 @@ from typing import Any
 
 from ste_doc_rewriter.glossary import KINDS_SWAP
 
-# Markdown line markers (ATX heading, list item, blockquote).
+# Markdown line markers (ATX heading, setext underline or rule, list item, blockquote).
 HEADING = re.compile(r"#{1,6}(?:[ \t]+|$)")
+UNDERLINE = re.compile(r"[ \t]*(?:=+|-+)[ \t]*")
 LIST_ITEM = re.compile(r"(?:[-*+]|\d{1,3}[.)])[ \t]+")
 _QUOTE = re.compile(r"[ \t]*(?:>[ \t]?)*")
 
@@ -67,7 +68,7 @@ def _unquote(line: str) -> str:
 def _starts_sentence(text: str, start: int) -> bool:
     """A match starts a sentence after a heading or list marker or a finished
     sentence on its line; at the start of a line (inside a blockquote too) when
-    the line before is blank, a heading, or ends a sentence."""
+    the line before is blank, a heading or heading underline, or ends a sentence."""
     line_start = text.rfind("\n", 0, start) + 1
     prefix = _unquote(text[line_start:start])
     if prefix.strip():
@@ -75,7 +76,12 @@ def _starts_sentence(text: str, start: int) -> bool:
     if line_start == 0:
         return True
     prev = _unquote(text[text.rfind("\n", 0, line_start - 1) + 1:line_start - 1]).strip()
-    return not prev or HEADING.match(prev) is not None or prev.endswith((".", "!", "?", ":"))
+    return (
+        not prev
+        or HEADING.match(prev) is not None
+        or UNDERLINE.fullmatch(prev) is not None
+        or prev.endswith((".", "!", "?", ":"))
+    )
 
 
 def _wrapped(text: str, match: re.Match[str]) -> bool:

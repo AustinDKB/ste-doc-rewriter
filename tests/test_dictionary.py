@@ -187,3 +187,21 @@ def test_first_use_expansion_not_capitalized_mid_sentence_wraps():
         "This was fixed in issue\n#123 API calls.",
     ):
         assert "application programming interface (API)" in swap(text), text
+
+
+def test_first_use_expansion_skips_front_matter_and_follows_setext_heading():
+    api = [{"term": "API", "replace": "application programming interface (API)", "kind": "acronym_expand", "case_sensitive": True}]
+
+    def swap(text: str) -> str:
+        protected = protect(text)
+        return restore(apply_swaps(protected.text, api)[0], protected.spans)
+
+    assert swap("---\ntitle: API guide\n---\nThe API returns JSON.") == (
+        "---\ntitle: API guide\n---\nThe application programming interface (API) returns JSON."
+    )
+    assert swap("Install\n=======\nAPI keys rotate.") == (
+        "Install\n=======\nApplication programming interface (API) keys rotate."
+    )
+    assert swap("Open docs/README.md. API calls fail.") == (
+        "Open docs/README.md. Application programming interface (API) calls fail."
+    )

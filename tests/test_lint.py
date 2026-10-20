@@ -1,6 +1,7 @@
 """Each Phase-1 lint rule."""
 
 from ste_doc_rewriter.lint import lint, split_sentences
+from ste_doc_rewriter.protect import protect
 
 
 BANNED = [{"term": "utilize", "replace": "use", "kind": "ste_swap"}]
@@ -207,10 +208,21 @@ def test_table_rows_and_front_matter_are_not_joined():
         "| timeout | 30 | Wait time |\n"
         "| retries | 3 | Retry count |\n"
     )
-    assert split_sentences(text) == [
+    assert split_sentences(protect(text).text) == [
         "Set these keys.",
         "| Key | Default | Meaning |",
         "| timeout | 30 | Wait time |",
         "| retries | 3 | Retry count |",
     ]
-    assert not [f for f in lint(text).findings if f.rule == "sentence_length"]
+    assert not [f for f in lint(protect(text).text).findings if f.rule == "sentence_length"]
+
+
+def test_setext_heading_does_not_join_next_sentence():
+    assert split_sentences("Install\n=======\nAPI keys rotate every day.\n\nSetup\n-----\nRun the job.") == [
+        "Install", "API keys rotate every day.", "Setup", "Run the job.",
+    ]
+
+
+def test_leading_rule_is_not_front_matter():
+    text = "---\n\nIntro text here.\n\nMore text.\n\n---\n\nRest of doc."
+    assert split_sentences(protect(text).text) == ["Intro text here.", "More text.", "Rest of doc."]

@@ -59,7 +59,7 @@ uv run ste-rewrite rewrite samples/messy_ops.md -o /tmp/out.md --report /tmp/rep
 
 ## What Phase 1 protects
 
-Fenced/inline code, URLs, markdown link targets, file paths, CLI flags, numbers with units, and product names from `glossary/protect.json` (plus any `kind: protect` entries). Lint sees each protected span as one neutral word.
+YAML front matter, fenced/inline code, URLs, markdown link targets, file paths, CLI flags, numbers with units, and product names from `glossary/protect.json` (plus any `kind: protect` entries). Lint sees each protected span as one neutral word.
 
 ## Layout
 

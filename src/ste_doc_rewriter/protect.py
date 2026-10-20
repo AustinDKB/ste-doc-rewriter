@@ -16,16 +16,19 @@ PLACEHOLDER = re.compile(r"\x00P(\d+)\x00")
 _PLACEHOLDER_LINES = re.compile(r"(\x00P\d+\x00)(\n*)")
 
 # Order matters: longer / more specific first.
+# YAML front matter: "---" on the first line, then a non-blank line, up to "---".
+_FRONT_MATTER = re.compile(r"\A---[ \t]*\n(?=[ \t]*\S)[\s\S]*?\n---[ \t]*(?=\n|\Z)")
 _FENCED = re.compile(r"```[\s\S]*?```")
 _INLINE = re.compile(r"`[^`\n]+`")
 # Markdown link target: the "(...)" after "]"
 _LINK_TARGET = re.compile(r"(?<=\])\([^)\n]*\)")
 _URL = re.compile(r"https?://[^\s<>\]\)\"']*[^\s<>\]\)\"'.,;:!?]")
-# Absolute or relative paths with a slash and a file-ish tail
+# Absolute or relative paths with a slash and a file-ish tail; a trailing
+# sentence mark (". , ; : ! ?") stays outside, as for URLs and flag values.
 _PATH = re.compile(
-    r"(?<![\w/])(?:\.{0,2}/)?(?:[\w.-]+/)+[\w.-]+(?![\w/])"
+    r"(?<![\w/])(?:\.{0,2}/)?(?:[\w.-]+/)+[\w.-]*\w(?![\w/])"
 )
-_FLAG = re.compile(r"(?<![\w-])--?[A-Za-z][\w-]*(?:=[^\s]+)?(?![\w-])")
+_FLAG = re.compile(r"(?<![\w-])--?[A-Za-z][\w-]*(?:=[^\s]*[^\s.,;:!?])?(?![\w-])")
 # Numbers with common units (space optional): 10ms, 2.5 GB, 80%
 _NUMBER_UNIT = re.compile(
     r"(?<!\w)\d+(?:\.\d+)?\s?(?:"
@@ -48,8 +51,8 @@ def _product_pattern(names: list[str]) -> re.Pattern[str] | None:
 def protect(text: str, product_names: list[str] | None = None) -> ProtectResult:
     """Replace protected spans with opaque placeholders; restore with restore().
 
-    A multi-line span (a fenced code block) keeps its newlines after the
-    placeholder, so line numbers match and the block stays its own paragraph.
+    A multi-line span (front matter, a fenced code block) keeps its newlines after
+    the placeholder, so line numbers match and the block stays its own paragraph.
     """
     spans: dict[str, str] = {}
     counter = 0
@@ -62,7 +65,9 @@ def protect(text: str, product_names: list[str] | None = None) -> ProtectResult:
         return key + "\n" * match.group(0).count("\n")
 
     out = text
-    for pattern in (_FENCED, _INLINE, _LINK_TARGET, _URL, _PATH, _FLAG, _NUMBER_UNIT):
+    for pattern in (
+        _FRONT_MATTER, _FENCED, _INLINE, _LINK_TARGET, _URL, _PATH, _FLAG, _NUMBER_UNIT,
+    ):
         out = pattern.sub(stash, out)
 
     prod = _product_pattern(product_names or [])
