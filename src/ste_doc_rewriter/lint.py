@@ -129,6 +129,10 @@ class LintResult:
 
 
 def split_sentences(text: str) -> list[str]:
+    return [s for s, _ in _sentences(text)]
+
+
+def _sentences(text: str) -> list[tuple[str, bool]]:
     """Join wrapped lines of a paragraph, then split on .!?.
 
     A blank line, list item, "===" / "---" line (setext underline or rule), or
@@ -138,10 +142,11 @@ def split_sentences(text: str) -> list[str]:
     are removed, so they are not sentences.
 
     Pieces with no words outside protected placeholders are not sentences.
+    Returns (sentence, prose) pairs; table-row and list-item sentences are not prose.
     """
     lines = text.splitlines()
     current: list[str] = []
-    groups = [current]
+    groups = [(current, True)]
     for i, raw in enumerate(lines):
         line = raw.strip()
         heading = HEADING.match(line)
@@ -152,17 +157,17 @@ def split_sentences(text: str) -> list[str]:
         )
         if block or alone or item:
             if alone:
-                groups.append([line[heading.end():] if heading else line])
+                groups.append(([line[heading.end():] if heading else line], heading is not None))
             current = []
-            groups.append(current)
+            groups.append((current, item is None))
         if block or alone:
             continue
         current.append(line[item.end():] if item else line)
-    out: list[str] = []
-    for group in groups:
+    out: list[tuple[str, bool]] = []
+    for group, prose in groups:
         parts = _SENTENCE_SPLIT.split(" ".join(group))
         out.extend(
-            p.strip() for p in parts if _WORD.search(PLACEHOLDER.sub(" ", p))
+            (p.strip(), prose) for p in parts if _WORD.search(PLACEHOLDER.sub(" ", p))
         )
     return out
 
@@ -351,9 +356,9 @@ def lint(
             ))
             bad_sentences.add(si)
 
-    # Paragraph length (max 6 sentences) — attribute to first line of paragraph
+    # Paragraph length (max 6 prose sentences) — attribute to first line of paragraph
     for para in split_paragraphs(text):
-        para_sents = split_sentences(para)
+        para_sents = [s for s, prose in _sentences(para) if prose]
         if len(para_sents) > 6:
             line = _line_of(text, para)
             findings.append(Finding(

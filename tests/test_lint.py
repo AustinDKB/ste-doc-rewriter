@@ -189,6 +189,18 @@ def test_paragraph_length_counts_wrapped_sentences():
     assert [f.message for f in hits] == ["Paragraph has 7 sentences (max 6)"]
 
 
+def test_paragraph_length_skips_table_rows_and_list_items():
+    rows = "".join(f"| key{i} | {i} |\n" for i in range(7))
+    table = f"Set these keys.\n| Key | Value |\n|---|---|\n{rows}The job reads them."
+    items = "Set these keys:\n" + "".join(f"- Set key {c}.\n" for c in "abcdefg")
+    for text in (table, items):
+        result = lint(text)
+        assert not [f for f in result.findings if f.rule == "paragraph_length"], text
+        assert result.score == 100.0, text
+    long_item = "Set these keys:\n- Set the key that the job reads " + "and the key " * 10 + "now."
+    assert [f.rule for f in lint(long_item).findings] == ["sentence_length"]
+
+
 def test_inline_code_and_issue_refs_do_not_split_wrapped_sentences():
     assert split_sentences("To install the tool, run\n\x00P0\x00\nfrom the repo root.") == [
         "To install the tool, run \x00P0\x00 from the repo root.",
