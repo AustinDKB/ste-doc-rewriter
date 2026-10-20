@@ -1,0 +1,35 @@
+[
+  {
+    "term": "RHEL",
+    "replace": "Red Hat Enterprise Linux (RHEL)",
+    "kind": "acronym_expand",
+    "domains": ["devops"],
+    "case_sensitive": true,
+    "source_url": "https://docs.redhat.com/en/glossary"
+  },
+  {
+    "term": "OpenShift",
+    "replace": "OpenShift",
+    "kind": "protect",
+    "domains": ["devops"],
+    "case_sensitive": true,
+    "source_url": "https://docs.redhat.com/en/glossary",
+    "notes": "Product name"
+  },
+  {
+    "term": "SELinux",
+    "replace": "Security-Enhanced Linux (SELinux)",
+    "kind": "acronym_expand",
+    "domains": ["devops"],
+    "case_sensitive": true,
+    "source_url": "https://docs.redhat.com/en/glossary"
+  },
+  {
+    "term": "RPM",
+    "replace": "RPM Package Manager (RPM)",
+    "kind": "acronym_expand",
+    "domains": ["devops"],
+    "case_sensitive": true,
+    "source_url": "https://docs.redhat.com/en/glossary"
+  }
+]

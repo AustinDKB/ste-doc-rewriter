@@ -1,0 +1,202 @@
+[
+  {
+    "term": "utilize",
+    "replace": "use",
+    "kind": "ste_swap",
+    "pos": "verb",
+    "domains": ["general"],
+    "source_url": "https://www.plainlanguage.gov/guidelines/words/",
+    "notes": "Plain-language / STE-aligned preference; not ASD dictionary text"
+  },
+  {
+    "term": "utilisation",
+    "replace": "use",
+    "kind": "ste_swap",
+    "pos": "noun",
+    "domains": ["general"],
+    "source_url": "https://www.plainlanguage.gov/guidelines/words/",
+    "notes": "British spelling variant of utilization"
+  },
+  {
+    "term": "utilization",
+    "replace": "use",
+    "kind": "ste_swap",
+    "pos": "noun",
+    "domains": ["general"],
+    "source_url": "https://www.plainlanguage.gov/guidelines/words/"
+  },
+  {
+    "term": "commence",
+    "replace": "start",
+    "kind": "ste_swap",
+    "pos": "verb",
+    "domains": ["general"],
+    "source_url": "https://www.plainlanguage.gov/guidelines/words/"
+  },
+  {
+    "term": "terminate",
+    "replace": "end",
+    "kind": "ste_swap",
+    "pos": "verb",
+    "domains": ["general"],
+    "source_url": "https://www.plainlanguage.gov/guidelines/words/",
+    "notes": "Prefer end/stop for prose; process kill contexts stay protected in code"
+  },
+  {
+    "term": "facilitate",
+    "replace": "help",
+    "kind": "ste_swap",
+    "pos": "verb",
+    "domains": ["general"],
+    "source_url": "https://www.plainlanguage.gov/guidelines/words/"
+  },
+  {
+    "term": "approximately",
+    "replace": "about",
+    "kind": "ste_swap",
+    "pos": "adverb",
+    "domains": ["general"],
+    "source_url": "https://www.plainlanguage.gov/guidelines/words/"
+  },
+  {
+    "term": "accomplish",
+    "replace": "do",
+    "kind": "ste_swap",
+    "pos": "verb",
+    "domains": ["general"],
+    "source_url": "https://www.plainlanguage.gov/guidelines/words/"
+  },
+  {
+    "term": "attempt",
+    "replace": "try",
+    "kind": "ste_swap",
+    "pos": "verb",
+    "domains": ["general"],
+    "source_url": "https://www.plainlanguage.gov/guidelines/words/"
+  },
+  {
+    "term": "demonstrate",
+    "replace": "show",
+    "kind": "ste_swap",
+    "pos": "verb",
+    "domains": ["general"],
+    "source_url": "https://www.plainlanguage.gov/guidelines/words/"
+  },
+  {
+    "term": "require",
+    "replace": "need",
+    "kind": "ste_swap",
+    "pos": "verb",
+    "domains": ["general"],
+    "source_url": "https://www.plainlanguage.gov/guidelines/words/"
+  },
+  {
+    "term": "sufficient",
+    "replace": "enough",
+    "kind": "ste_swap",
+    "pos": "adjective",
+    "domains": ["general"],
+    "source_url": "https://www.plainlanguage.gov/guidelines/words/"
+  },
+  {
+    "term": "assist",
+    "replace": "help",
+    "kind": "ste_swap",
+    "pos": "verb",
+    "domains": ["general"],
+    "source_url": "https://www.plainlanguage.gov/guidelines/words/"
+  },
+  {
+    "term": "obtain",
+    "replace": "get",
+    "kind": "ste_swap",
+    "pos": "verb",
+    "domains": ["general"],
+    "source_url": "https://www.plainlanguage.gov/guidelines/words/"
+  },
+  {
+    "term": "prior to",
+    "replace": "before",
+    "kind": "ste_swap",
+    "domains": ["general"],
+    "source_url": "https://www.plainlanguage.gov/guidelines/words/"
+  },
+  {
+    "term": "in order to",
+    "replace": "to",
+    "kind": "ste_swap",
+    "domains": ["general"],
+    "source_url": "https://www.plainlanguage.gov/guidelines/words/"
+  },
+  {
+    "term": "consequently",
+    "replace": "so",
+    "kind": "ste_swap",
+    "pos": "adverb",
+    "domains": ["general"],
+    "source_url": "https://www.plainlanguage.gov/guidelines/words/"
+  },
+  {
+    "term": "concerning",
+    "replace": "about",
+    "kind": "ste_swap",
+    "domains": ["general"],
+    "source_url": "https://www.plainlanguage.gov/guidelines/words/"
+  },
+  {
+    "term": "indicate",
+    "replace": "show",
+    "kind": "ste_swap",
+    "pos": "verb",
+    "domains": ["general"],
+    "source_url": "https://www.plainlanguage.gov/guidelines/words/"
+  },
+  {
+    "term": "modify",
+    "replace": "change",
+    "kind": "ste_swap",
+    "pos": "verb",
+    "domains": ["general"],
+    "source_url": "https://www.plainlanguage.gov/guidelines/words/"
+  },
+  {
+    "term": "perform",
+    "replace": "do",
+    "kind": "ste_swap",
+    "pos": "verb",
+    "domains": ["general"],
+    "source_url": "https://www.plainlanguage.gov/guidelines/words/"
+  },
+  {
+    "term": "remainder",
+    "replace": "rest",
+    "kind": "ste_swap",
+    "pos": "noun",
+    "domains": ["general"],
+    "source_url": "https://www.plainlanguage.gov/guidelines/words/"
+  },
+  {
+    "term": "reside",
+    "replace": "live",
+    "kind": "ste_swap",
+    "pos": "verb",
+    "domains": ["general"],
+    "source_url": "https://www.plainlanguage.gov/guidelines/words/"
+  },
+  {
+    "term": "subsequent",
+    "replace": "next",
+    "kind": "ste_swap",
+    "pos": "adjective",
+    "domains": ["general"],
+    "source_url": "https://www.plainlanguage.gov/guidelines/words/"
+  },
+  {
+    "term": "therefore",
+    "replace": "so",
+    "kind": "ste_swap",
+    "pos": "adverb",
+    "domains": ["general"],
+    "source_url": "https://www.plainlanguage.gov/guidelines/words/"
+  }
+]

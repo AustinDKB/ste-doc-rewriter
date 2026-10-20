@@ -1,0 +1,67 @@
+[
+  {
+    "term": "CNCF",
+    "replace": "Cloud Native Computing Foundation (CNCF)",
+    "kind": "acronym_expand",
+    "domains": ["devops"],
+    "case_sensitive": true,
+    "source_url": "https://glossary.cncf.io/"
+  },
+  {
+    "term": "CI",
+    "replace": "continuous integration (CI)",
+    "kind": "acronym_expand",
+    "domains": ["devops"],
+    "case_sensitive": true,
+    "source_url": "https://glossary.cncf.io/"
+  },
+  {
+    "term": "CD",
+    "replace": "continuous delivery (CD)",
+    "kind": "acronym_expand",
+    "domains": ["devops"],
+    "case_sensitive": true,
+    "source_url": "https://glossary.cncf.io/"
+  },
+  {
+    "term": "CRD",
+    "replace": "custom resource definition (CRD)",
+    "kind": "acronym_expand",
+    "domains": ["devops"],
+    "case_sensitive": true,
+    "source_url": "https://glossary.cncf.io/"
+  },
+  {
+    "term": "RBAC",
+    "replace": "role-based access control (RBAC)",
+    "kind": "acronym_expand",
+    "domains": ["devops"],
+    "case_sensitive": true,
+    "source_url": "https://glossary.cncf.io/"
+  },
+  {
+    "term": "service mesh",
+    "replace": "service mesh",
+    "kind": "prefer",
+    "domains": ["devops"],
+    "source_url": "https://glossary.cncf.io/",
+    "notes": "Keep standard CNCF term; listed for coverage of domain vocabulary"
+  },
+  {
+    "term": "orchestrate",
+    "replace": "control and coordinate",
+    "kind": "ste_swap",
+    "pos": "verb",
+    "domains": ["devops"],
+    "source_url": "https://glossary.cncf.io/",
+    "notes": "STE-style swap for verbose coordination verb in ops docs"
+  },
+  {
+    "term": "containerize",
+    "replace": "put in a container",
+    "kind": "prefer",
+    "pos": "verb",
+    "domains": ["devops"],
+    "source_url": "https://glossary.cncf.io/"
+  }
+]

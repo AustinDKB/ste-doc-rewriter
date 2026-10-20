@@ -1,0 +1,59 @@
+[
+  {
+    "term": "CIA",
+    "replace": "confidentiality, integrity, and availability (CIA)",
+    "kind": "acronym_expand",
+    "domains": ["other"],
+    "case_sensitive": true,
+    "source_url": "https://csrc.nist.gov/glossary",
+    "notes": "Security triad; expand carefully in non-security contexts"
+  },
+  {
+    "term": "CVE",
+    "replace": "Common Vulnerabilities and Exposures (CVE)",
+    "kind": "acronym_expand",
+    "domains": ["other"],
+    "case_sensitive": true,
+    "source_url": "https://csrc.nist.gov/glossary"
+  },
+  {
+    "term": "CVSS",
+    "replace": "Common Vulnerability Scoring System (CVSS)",
+    "kind": "acronym_expand",
+    "domains": ["other"],
+    "case_sensitive": true,
+    "source_url": "https://csrc.nist.gov/glossary"
+  },
+  {
+    "term": "MFA",
+    "replace": "multi-factor authentication (MFA)",
+    "kind": "acronym_expand",
+    "domains": ["other"],
+    "case_sensitive": true,
+    "source_url": "https://csrc.nist.gov/glossary"
+  },
+  {
+    "term": "RBAC",
+    "replace": "role-based access control (RBAC)",
+    "kind": "acronym_expand",
+    "domains": ["other"],
+    "case_sensitive": true,
+    "source_url": "https://csrc.nist.gov/glossary"
+  },
+  {
+    "term": "PII",
+    "replace": "personally identifiable information (PII)",
+    "kind": "acronym_expand",
+    "domains": ["other"],
+    "case_sensitive": true,
+    "source_url": "https://csrc.nist.gov/glossary"
+  },
+  {
+    "term": "authentication",
+    "replace": "authentication",
+    "kind": "prefer",
+    "domains": ["other"],
+    "source_url": "https://csrc.nist.gov/glossary",
+    "notes": "Keep NIST term; listed for domain coverage"
+  }
+]

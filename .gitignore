@@ -10,3 +10,9 @@ data/raw/
 adapters/
 wandb/
 .cache/
+.coverage
+htmlcov/
+.pytest_cache/
+glossary/local/
+dist/
+*.egg-info/

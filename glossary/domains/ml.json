@@ -1,0 +1,51 @@
+[
+  {
+    "term": "ML",
+    "replace": "machine learning (ML)",
+    "kind": "acronym_expand",
+    "domains": ["data_science"],
+    "case_sensitive": true,
+    "source_url": "https://developers.google.com/machine-learning/glossary"
+  },
+  {
+    "term": "NLP",
+    "replace": "natural language processing (NLP)",
+    "kind": "acronym_expand",
+    "domains": ["data_science"],
+    "case_sensitive": true,
+    "source_url": "https://developers.google.com/machine-learning/glossary"
+  },
+  {
+    "term": "GPU",
+    "replace": "graphics processing unit (GPU)",
+    "kind": "acronym_expand",
+    "domains": ["data_science"],
+    "case_sensitive": true,
+    "source_url": "https://developers.google.com/machine-learning/glossary"
+  },
+  {
+    "term": "LoRA",
+    "replace": "low-rank adaptation (LoRA)",
+    "kind": "acronym_expand",
+    "domains": ["data_science"],
+    "case_sensitive": true,
+    "source_url": "https://developers.google.com/machine-learning/glossary",
+    "notes": "Common fine-tuning term; expansion is community-standard wording"
+  },
+  {
+    "term": "overfitting",
+    "replace": "overfitting",
+    "kind": "prefer",
+    "domains": ["data_science"],
+    "source_url": "https://developers.google.com/machine-learning/glossary",
+    "notes": "Keep standard ML term"
+  },
+  {
+    "term": "feature",
+    "replace": "feature",
+    "kind": "prefer",
+    "domains": ["data_science"],
+    "source_url": "https://developers.google.com/machine-learning/glossary",
+    "notes": "ML sense: input variable; listed for domain coverage"
+  }
+]

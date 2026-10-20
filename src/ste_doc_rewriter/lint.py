@@ -1,0 +1,259 @@
+"""Programmatic STE-oriented lint checks (Phase 1 subset)."""
+
+from __future__ import annotations
+
+import re
+from dataclasses import dataclass, field
+from typing import Any, Literal
+
+
+Mode = Literal["descriptive", "procedure"]
+
+_SENTENCE_SPLIT = re.compile(r"(?<=[.!?])\s+")
+_WORD = re.compile(r"[A-Za-z0-9]+(?:'[A-Za-z]+)?")
+_PASSIVE = re.compile(
+    r"\b(?:am|is|are|was|were|be|been|being)\s+"
+    r"(?:\w+ly\s+)?"
+    r"\w+ed\b",
+    re.IGNORECASE,
+)
+# Common irregular past participles after be-verbs
+_PASSIVE_IRREGULAR = re.compile(
+    r"\b(?:am|is|are|was|were|be|been|being)\s+"
+    r"(?:\w+ly\s+)?"
+    r"(?:made|done|written|given|taken|shown|built|set|put|sent|found|"
+    r"left|held|kept|known|seen|used|run|begun|chosen|drawn|driven|"
+    r"eaten|fallen|felt|fought|forgotten|frozen|gotten|gotten|"
+    r"gone|grown|heard|hidden|hit|hurt|led|lost|met|paid|read|"
+    r"ridden|risen|said|sold|sung|sunk|slept|spoken|spent|stood|"
+    r"struck|swum|taught|torn|thought|thrown|understood|worn|won|"
+    r"written)\b",
+    re.IGNORECASE,
+)
+_ING_VERB = re.compile(
+    r"\b(?:is|are|was|were|am|be|been|being|start|starts|started|"
+    r"begin|begins|began|keep|keeps|kept|continue|continues|continued|"
+    r"by)\s+(\w+ing)\b",
+    re.IGNORECASE,
+)
+# Avoid gerund subjects / adjectives: "The following items" — still may false-positive
+_STOP_ING = frozenset({
+    "during", "something", "anything", "everything", "nothing",
+    "morning", "evening", "warning", "string", "being",
+})
+
+
+@dataclass
+class Finding:
+    rule: str
+    line: int
+    message: str
+    suggestion: str | None = None
+
+
+@dataclass
+class LintResult:
+    score: float  # percent of sentences that pass all rules (0–100)
+    sentence_count: int
+    passing_sentences: int
+    findings: list[Finding] = field(default_factory=list)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "score": round(self.score, 2),
+            "sentence_count": self.sentence_count,
+            "passing_sentences": self.passing_sentences,
+            "findings": [
+                {
+                    "rule": f.rule,
+                    "line": f.line,
+                    "message": f.message,
+                    **({"suggestion": f.suggestion} if f.suggestion else {}),
+                }
+                for f in self.findings
+            ],
+        }
+
+
+def split_sentences(text: str) -> list[str]:
+    """Split on newlines then .!? so markdown headings do not join the next line."""
+    text = text.strip()
+    if not text:
+        return []
+    out: list[str] = []
+    for line in text.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        line = re.sub(r"^#+\s*", "", line)
+        parts = _SENTENCE_SPLIT.split(line)
+        out.extend(p.strip() for p in parts if p.strip())
+    return out
+
+
+def split_paragraphs(text: str) -> list[str]:
+    blocks = re.split(r"\n\s*\n", text.strip())
+    return [b.strip() for b in blocks if b.strip()]
+
+
+def word_count(sentence: str) -> int:
+    return len(_WORD.findall(sentence))
+
+
+def _line_of(text: str, snippet: str) -> int:
+    """1-based line number of first occurrence of snippet (best effort)."""
+    idx = text.find(snippet)
+    if idx < 0:
+        # try first 40 chars
+        idx = text.find(snippet[:40])
+    if idx < 0:
+        return 1
+    return text[:idx].count("\n") + 1
+
+
+def _noun_cluster_hits(sentence: str) -> list[str]:
+    """Flag runs of 4+ capitalized or lowercase content words (naive)."""
+    # Tokenize; treat consecutive nouns-ish (no determiner/verb/prep) as cluster
+    # Heuristic: 4+ adjacent Title-Case or all-lowercase alpha tokens without
+    # common function words between them.
+    function = frozenset({
+        "a", "an", "the", "and", "or", "but", "if", "of", "to", "in", "on",
+        "for", "with", "by", "from", "as", "at", "is", "are", "was", "were",
+        "be", "been", "being", "this", "that", "these", "those", "it", "its",
+        "you", "your", "we", "our", "they", "their", "not", "can", "may",
+        "must", "should", "will", "shall", "do", "does", "did", "has", "have",
+        "had", "when", "where", "while", "after", "before", "into", "onto",
+        "over", "under", "than", "then", "also", "only", "just", "about",
+    })
+    tokens = _WORD.findall(sentence)
+    clusters: list[str] = []
+    run: list[str] = []
+    for tok in tokens:
+        if tok.lower() in function or tok.isdigit():
+            if len(run) > 3:
+                clusters.append(" ".join(run))
+            run = []
+        else:
+            run.append(tok)
+    if len(run) > 3:
+        clusters.append(" ".join(run))
+    return clusters
+
+
+def lint(
+    text: str,
+    *,
+    mode: Mode = "descriptive",
+    not_approved: list[dict[str, Any]] | None = None,
+) -> LintResult:
+    """Run Phase-1 STE-oriented checks. Score = % sentences with zero findings."""
+    max_words = 20 if mode == "procedure" else 25
+    findings: list[Finding] = []
+    sentences = split_sentences(text)
+    if not sentences:
+        return LintResult(score=100.0, sentence_count=0, passing_sentences=0)
+
+    # Build not-approved lookup
+    banned: dict[str, str] = {}
+    for entry in not_approved or []:
+        if entry.get("kind") in {"ste_swap", "prefer"}:
+            banned[entry["term"].lower()] = entry["replace"]
+
+    bad_sentences: set[int] = set()
+
+    for si, sentence in enumerate(sentences):
+        line = _line_of(text, sentence)
+        words = word_count(sentence)
+        if words > max_words:
+            findings.append(Finding(
+                rule="sentence_length",
+                line=line,
+                message=(
+                    f"Sentence has {words} words "
+                    f"(max {max_words} for {mode} text)"
+                ),
+            ))
+            bad_sentences.add(si)
+
+        # not-approved words
+        for tok in _WORD.findall(sentence):
+            key = tok.lower()
+            if key in banned:
+                findings.append(Finding(
+                    rule="not_approved",
+                    line=line,
+                    message=f"Not-approved word {tok!r}",
+                    suggestion=banned[key],
+                ))
+                bad_sentences.add(si)
+
+        if _PASSIVE.search(sentence) or _PASSIVE_IRREGULAR.search(sentence):
+            findings.append(Finding(
+                rule="passive_voice",
+                line=line,
+                message="Possible passive voice",
+                suggestion="Prefer active voice",
+            ))
+            bad_sentences.add(si)
+
+        for cluster in _noun_cluster_hits(sentence):
+            findings.append(Finding(
+                rule="noun_cluster",
+                line=line,
+                message=f"Noun cluster longer than 3 words: {cluster!r}",
+                suggestion="Split or rephrase the cluster",
+            ))
+            bad_sentences.add(si)
+
+        for m in _ING_VERB.finditer(sentence):
+            ing = m.group(1)
+            if ing.lower() in _STOP_ING:
+                continue
+            findings.append(Finding(
+                rule="ing_verb",
+                line=line,
+                message=f"-ing form used as verb: {ing!r}",
+                suggestion="Prefer a simple verb form",
+            ))
+            bad_sentences.add(si)
+
+    # Paragraph length (max 6 sentences) — attribute to first line of paragraph
+    for para in split_paragraphs(text):
+        para_sents = split_sentences(para)
+        if len(para_sents) > 6:
+            line = _line_of(text, para)
+            findings.append(Finding(
+                rule="paragraph_length",
+                line=line,
+                message=f"Paragraph has {len(para_sents)} sentences (max 6)",
+            ))
+            # Mark all sentences in this paragraph as failing the paragraph rule
+            for s in para_sents:
+                try:
+                    bad_sentences.add(sentences.index(s))
+                except ValueError:
+                    pass
+
+    passing = len(sentences) - len(bad_sentences)
+    score = 100.0 * passing / len(sentences)
+    return LintResult(
+        score=score,
+        sentence_count=len(sentences),
+        passing_sentences=passing,
+        findings=findings,
+    )
+
+
+def format_text_report(result: LintResult) -> str:
+    lines = [
+        f"STE lint score: {result.score:.1f}% "
+        f"({result.passing_sentences}/{result.sentence_count} sentences pass)",
+    ]
+    if not result.findings:
+        lines.append("No findings.")
+        return "\n".join(lines)
+    lines.append("Findings:")
+    for f in result.findings:
+        sug = f" → {f.suggestion}" if f.suggestion else ""
+        lines.append(f"  L{f.line} [{f.rule}] {f.message}{sug}")
+    return "\n".join(lines)

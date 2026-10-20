@@ -2,7 +2,7 @@
 
 **Repo:** `ste-doc-rewriter`  
 **Date:** 2026-10-03  
-**Status:** Planned (not yet implemented)  
+**Status:** Phase 1 implemented (dictionary + protect + lint CLI; no model)  
 **Owner intent:** Offload STE100 + Google style documentation rewrites from subscription LLM tokens onto a small specialist model + dictionary + linter.
 
 ---
@@ -414,31 +414,38 @@ jobs:
       - upload rewritten artifact / optional PR comment
 ```
 
-### 11.7 Repo layout (planned after implementation)
+### 11.7 Repo layout (Phase 1 + planned later)
 
 ```text
 ste-doc-rewriter/
   README.md
+  SOURCES.md                     # source licenses (ASD dict not redistributed)
   docs/PLAN_AND_SPEC.md          # this document
   schemas/glossary.schema.json
-  data/
+  pyproject.toml                 # ste-rewrite CLI entry point
+  Makefile
+  samples/                       # small docs for lint / rewrite checks
+  data/                          # Phase 2+
     gold/                        # 500–1000 human pairs
     train.jsonl
     holdout.jsonl
   glossary/
-    ste.json
-    domains/*.json
+    ste.json                     # plain-language / STE-aligned swaps (not ASD text)
+    google_word_list.json
     protect.json
-  src/
+    domains/*.json
+    local/                       # gitignored optional licensed STE overlay
+  src/ste_doc_rewriter/
     protect.py
     dictionary.py
-    rewrite_client.py
     lint.py
+    glossary.py
     pipeline.py
-  train/
+    cli.py
+  train/                         # Phase 4
     sft_config.yaml
     prepare_jsonl.py
-  ci/
+  ci/                            # Phase 6
     ste-rewrite.yml
 ```
 
@@ -476,3 +483,10 @@ ste-doc-rewriter/
 | Messiness mix | 40/40/20 ultra/mid/near | Robustness across real inputs |
 | Inference | Cloud/API CI first | Continuous / bulk load |
 | Public repo name | `ste-doc-rewriter` | Clear product intent |
+| Phase 1 package layout | `src/ste_doc_rewriter/` + `ste-rewrite` CLI (argparse) | Spec asked for a Python package + CLI; hatchling/uv is enough |
+| STE dictionary in git | Starter plain-language / STE-aligned swaps only; full ASD dict via `glossary/local/` (gitignored) | Public repo must not redistribute copyrighted ASD dictionary text |
+| Filler deletion (`please`, `simply`) | Not in Phase 1 glossary | Schema requires non-empty `replace`; empty delete would violate schema |
+| Sentence length modes | `--mode descriptive` (25) / `procedure` (20) | Spec lists both limits; default descriptive |
+| Lint score | Percent of sentences with zero findings | Matches “percent of sentences passing”; CI uses `--threshold` |
+| Identity glossary rows | Allowed for domain coverage; dictionary skips term==replace | Lets starter domain files record terms without no-op churn |
+| Sentence splitting | Split on newlines (strip `#` headings) then `.!?` | Avoids markdown titles joining the next line as a false noun cluster |
