@@ -15,12 +15,13 @@ LIST_ITEM = re.compile(r"(?:[-*+]|\d{1,3}[.)])[ \t]+")
 _QUOTE = re.compile(r"[ \t]*(?:>[ \t]?)*")
 
 # Only "etc." can end a sentence (after an optional ")"): before a capital or a
-# protected span, at the end of a paragraph, or before a list item or rule.
+# protected span, at the end of a paragraph, or before a list item, heading,
+# table row or rule.
 # "e.g." and "i.e." never do.
 _SENTENCE_FINAL_TERMS = frozenset({"etc."})
 _SENTENCE_BREAK = re.compile(
     r"(\)?)(?:\s+(?:[A-Z]|\x00P)|[ \t]*(?:\n[ \t]*\n|$)"
-    rf"|[ \t]*\n(?:[ \t]*(?:{LIST_ITEM.pattern})|{UNDERLINE.pattern}(?:\n|$)))"
+    rf"|[ \t]*\n(?:[ \t]*(?:{LIST_ITEM.pattern}|{HEADING.pattern}|\|)|{UNDERLINE.pattern}(?:\n|$)))"
 )
 # Line text before a match that starts a sentence: a heading or list marker,
 # or a finished sentence.
@@ -68,7 +69,7 @@ def _unquote(line: str) -> str:
 def _starts_sentence(text: str, start: int) -> bool:
     """A match starts a sentence after a heading or list marker or a finished
     sentence on its line; at the start of a line (inside a blockquote too) when
-    the line before is blank, a heading or heading underline, or ends a sentence."""
+    the line before is blank, a heading, table row or underline, or ends a sentence."""
     line_start = text.rfind("\n", 0, start) + 1
     prefix = _unquote(text[line_start:start])
     if prefix.strip():
@@ -80,6 +81,7 @@ def _starts_sentence(text: str, start: int) -> bool:
         not prev
         or HEADING.match(prev) is not None
         or UNDERLINE.fullmatch(prev) is not None
+        or prev.startswith("|")
         or prev.endswith((".", "!", "?", ":"))
     )
 

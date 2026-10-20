@@ -141,6 +141,7 @@ def test_first_use_expansion_not_capitalized_on_wrapped_lines():
         "- Run the job and send\n  API calls to the store.": "- Run the job and send\n  application programming interface (API) calls to the store.",
         "Rotate the keys.\nAPI calls fail.": "Rotate the keys.\nApplication programming interface (API) calls fail.",
         "# Guide\nAPI calls fail.": "# Guide\nApplication programming interface (API) calls fail.",
+        "| Key | Value |\nAPI calls fail.": "| Key | Value |\nApplication programming interface (API) calls fail.",
         "Intro text\n\nAPI calls fail.": "Intro text\n\nApplication programming interface (API) calls fail.",
     }
     for text, expected in cases.items():
@@ -207,7 +208,13 @@ def test_first_use_expansion_skips_front_matter_and_follows_setext_heading():
     )
 
 
-def test_etc_keeps_period_before_rule():
+def test_etc_keeps_period_before_rule_heading_and_table_row():
     entries = [{"term": "etc.", "replace": "and so on", "kind": "prefer", "case_sensitive": True}]
     out, _ = apply_swaps("Collect logs, metrics, etc.\n---\nNext.", entries)
     assert out == "Collect logs, metrics, and so on.\n---\nNext."
+    out, _ = apply_swaps("Collect logs, etc.\n# Next\nBody.", entries)
+    assert out == "Collect logs, and so on.\n# Next\nBody."
+    out, _ = apply_swaps("Collect logs, etc.\n| a | b |", entries)
+    assert out == "Collect logs, and so on.\n| a | b |"
+    out, _ = apply_swaps("Collect logs, etc.\n#123 fixed it.", entries)
+    assert out == "Collect logs, and so on\n#123 fixed it."
