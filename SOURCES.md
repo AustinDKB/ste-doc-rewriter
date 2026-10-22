@@ -32,7 +32,8 @@ that directory is gitignored. It refuses an `--out` directory outside `glossary/
 It writes nothing when the parse finds no approved words.
 Approved nouns also get their regular plural (`valve`, `valves`). A not-approved
 word gets no swap row when the same spelling is approved in any part of speech.
-A one-word swap to a word approved only as another part of speech is skipped.
+A one-word swap is skipped when the replacement is approved, or tagged (TN)/(TV),
+only as another part of speech.
 The CLI loads it automatically when present. Do **not** commit ASD dictionary
 text to this public repository.
 

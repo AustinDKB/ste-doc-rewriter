@@ -52,7 +52,7 @@ noalt (n)          Use a different
 re- (prefix)       In general, use
                    the other word.
 wirex (v)          BRACK (v)                BRACK THE FLIM.        Wirex the flim.
-                   (WITH A ZORB [TN])
+                   (WITH A KLONK [TN])
 klonk (v)          KLONK (TN)               PUT A KLONK ON IT.     Klonk it.
                    BRACK (v)                BRACK IT.              Klonk it again.
 spoof (v)          ZORB (v)                 ZORB IT.               Spoof it.
@@ -67,6 +67,8 @@ spinx (v)          TURN … QUICKLY (v)       TURN IT QUICKLY.       Spinx it.
 frabble (n)        ZORB (v)                 ZORB IT.               Do a frabble.
                    GLORP (n)                GET A GLORP.           Get a frabble.
 grizzle (v)        BLORT (adv)              DO IT BLORT.           Grizzle it.
+ungrob (v)         GROB (TN)                PUT GROB ON IT.        Ungrob it.
+                   BRACK (v)                BRACK IT.              Ungrob it again.
 
 Issue 9                                 Part 2 - Dictionary                        Page 2-1-Z1
 2025-01-15
@@ -101,8 +103,8 @@ def test_layout_import_keeps_spellings_and_replacements_only():
 
     blob = json.dumps(rows)
     assert "made-up" not in blob
-    assert "WITH A ZORB" not in blob
-    assert stats.skipped == {"no_alternative": 1, "pos_mismatch": 2, "prefix": 1}
+    assert "WITH A KLONK" not in blob
+    assert stats.skipped == {"no_alternative": 1, "pos_mismatch": 3, "prefix": 1}
     assert stats.approved_rows == sum(row["kind"] == "approved" for row in rows)
     assert stats.swap_rows == sum(row["kind"] == "ste_swap" for row in rows)
     assert all(row["source_url"] == "https://www.asd-ste100.org/" for row in rows)
@@ -169,7 +171,15 @@ def test_no_swap_to_a_word_approved_only_in_another_part_of_speech():
     frabble = [row["replace"] for row in rows if row["term"] == "frabble"]
     assert frabble == ["glorp"]
     assert "grizzle" not in {row["term"] for row in rows}
-    assert stats.skipped["pos_mismatch"] == 2
+    assert stats.skipped["pos_mismatch"] == 3
+
+
+def test_no_swap_to_a_technical_word_of_another_part_of_speech():
+    rows, _stats = import_dictionary_text(FIXTURE)
+    ungrob = [row["replace"] for row in rows if row["term"] == "ungrob"]
+    assert ungrob == ["brack"]
+    motz = [row["replace"] for row in rows if row["term"] == "motz"]
+    assert motz == ["dry-motz", "wet-motz", "brack"]
 
 
 @pytest.fixture

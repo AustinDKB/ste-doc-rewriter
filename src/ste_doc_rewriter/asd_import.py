@@ -59,7 +59,7 @@ TOKEN_RE = re.compile(
     rf"|…+"
     rf"|\.\.\."
 )
-TECHNICAL_RE = re.compile(r"([A-Z][A-Z0-9'’/-]*)[ \t]*[(\[]T[NV][)\]]")
+TECHNICAL_RE = re.compile(r"([A-Z][A-Z0-9'’/-]*)[ \t]*[(\[]T([NV])[)\]]")
 SOURCE = "https://www.asd-ste100.org/"
 
 
@@ -576,12 +576,17 @@ def _head_width(raw: str) -> int:
     return max(1, len(base.split()))
 
 
-def technical_words(text: str) -> set[str]:
-    """Words the dictionary tags as a technical name or verb."""
-    return {_lower(word) for word in TECHNICAL_RE.findall(text)}
+def technical_words(text: str) -> dict[str, set[str]]:
+    """Words the dictionary tags as a technical name or verb, with that part of speech."""
+    words: dict[str, set[str]] = {}
+    for word, tag in TECHNICAL_RE.findall(text):
+        words.setdefault(_lower(word), set()).add("noun" if tag == "N" else "verb")
+    return words
 
 
-def rows_for(entries: list[Entry], technical: set[str]) -> tuple[list[dict], int]:
+def rows_for(
+    entries: list[Entry], technical: dict[str, set[str]]
+) -> tuple[list[dict], int]:
     """Return overlay rows and the count of swap rows skipped for a part-of-speech mismatch."""
     rows: list[dict] = []
     pos_mismatch = 0
@@ -619,9 +624,13 @@ def rows_for(entries: list[Entry], technical: set[str]) -> tuple[list[dict], int
             if all(alt in technical and term in alt for alt in entry.alts):
                 continue
             for alt in entry.alts:
-                # A one-word swap to a word approved only as another part of
-                # speech breaks the sentence (respond (v) -> RESULT (n)).
-                alt_pos = approved.get(alt) if " " not in alt else None
+                # A one-word swap to a word approved or technical only as
+                # another part of speech breaks the sentence
+                # (respond (v) -> RESULT (n), degrease (v) -> GREASE (TN)).
+                alt_pos = (
+                    approved.get(alt, set()) | technical.get(alt, set())
+                    if " " not in alt else None
+                )
                 if alt_pos and POS_MAP[entry.pos] not in alt_pos:
                     pos_mismatch += 1
                     continue
