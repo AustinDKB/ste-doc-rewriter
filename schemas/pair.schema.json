@@ -22,7 +22,7 @@
     "input": {
       "type": "string",
       "minLength": 1,
-      "description": "Messy technical text as harvested (an excerpt; personal data removed)."
+      "description": "Messy technical text as harvested (an excerpt of a row with no detected personal data)."
     },
     "output": {
       "type": "string",

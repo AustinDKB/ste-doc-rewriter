@@ -71,15 +71,6 @@ def lint_score(text: str, entries: list[dict[str, Any]]) -> float:
     return round(lint(protected.text, glossary=entries).score / 100, 4)
 
 
-def fill_qc(pair: dict[str, Any], entries: list[dict[str, Any]]) -> dict[str, Any]:
-    """Return pair with protected_spans and qc.ste_lint_score recomputed."""
-    return {
-        **pair,
-        "protected_spans": protected_spans(pair["input"], entries),
-        "qc": {**pair["qc"], "ste_lint_score": lint_score(pair["output"], entries)},
-    }
-
-
 def missing_spans(pair: dict[str, Any], entries: list[dict[str, Any]]) -> list[str]:
     """Protected input spans that no protected span of the output keeps unchanged.
 

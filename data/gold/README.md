@@ -57,8 +57,10 @@ Aviation reports and other non-software text use the domain `other`.
 
 `scripts/harvest_inputs.py` streams a seeded sample (seed 20261021) from each
 dataset at a pinned revision. It never downloads a full dataset, and it writes
-the candidate pool to `data/raw/candidates.jsonl` (gitignored). It drops rows
-with personal data or offensive words and strips usernames and signatures.
+the candidate pool to `data/raw/candidates.jsonl` (gitignored). It drops each
+row that has offensive words or personal data (an email, an @mention, a phone
+number or an aircraft tail number). It does not edit the text of a row to
+remove personal data.
 `source.ref` is `<row id>@<dataset revision>`.
 
 ```bash

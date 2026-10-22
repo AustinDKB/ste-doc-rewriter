@@ -23,7 +23,7 @@ source license (see [README.md](README.md)); the output is a rewrite of it.
 | pair_000016 | HuggingFaceH4/stack-exchange-preferences | [datascience.stackexchange.com/q5893/a8377](https://datascience.stackexchange.com/a/8377) | [Adam Bittlingmayer](https://datascience.stackexchange.com/users/12363) | CC BY-SA 4.0 |
 | pair_000017 | open-index/open-github-issues | [duckdb/duckdb#21592](https://github.com/duckdb/duckdb/issues/21592) | — | ODC-By 1.0 (GitHub Terms of Service apply to the text) |
 | pair_000018 | open-index/open-github-issues | [etcd-io/etcd#13527](https://github.com/etcd-io/etcd/issues/13527) | — | ODC-By 1.0 (GitHub Terms of Service apply to the text) |
-| pair_000019 | elihoole/asrs-aviation-reports | [ACN 1611426](https://asrs.arc.nasa.gov/search/database.html) | — | Apache-2.0 (NASA ASRS, U.S. government work) |
+| pair_000019 | elihoole/asrs-aviation-reports | [ACN 1308069](https://asrs.arc.nasa.gov/search/database.html) | — | Apache-2.0 (NASA ASRS, U.S. government work) |
 | pair_000020 | HuggingFaceH4/stack-exchange-preferences | [sqa.stackexchange.com/q11935/a15748](https://sqa.stackexchange.com/a/15748) | [Stanislav Bashkyrtsev](https://sqa.stackexchange.com/users/14881) | CC BY-SA 4.0 |
 | pair_000021 | grammarly/coedit | 35 | — | Apache-2.0 |
 | pair_000022 | grammarly/coedit | 401 | — | Apache-2.0 |
