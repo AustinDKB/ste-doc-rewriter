@@ -39,6 +39,7 @@ MOOSEL (n),        A made-up animal         FEED THE MOOSEL.
 MEESEL
 flim (n)           PLINTH (n)               GET A PLINTH.          Get a flim.
 glorps (v)         ZORB (v)                 ZORB IT.               Glorps it.
+snib (or snob) (n) PLINTH (n)               GET A PLINTH.          Get a snib.
 plink (v)          ZORB (v)                 ZORB THE FLIM.         Plink the flim.
                    BRACK (v)                BRACK THE FLIM.        Plink it again.
 snarp              PLINTH (n)               GET A PLINTH.          Get a snarp.
@@ -60,7 +61,9 @@ Issue 9                                 Part 2 - Dictionary                     
 
 def test_layout_import_keeps_spellings_and_replacements_only():
     rows, stats = import_dictionary_text(FIXTURE)
-    by_key = {(row["term"], row["kind"], row["pos"]): row for row in rows}
+    by_key: dict[tuple, dict] = {}
+    for row in rows:
+        by_key.setdefault((row["term"], row["kind"], row["pos"]), row)
 
     assert by_key[("zorb", "approved", "verb")]["replace"] == "zorb"
     assert ("zorbs", "approved", "verb") in by_key
@@ -95,7 +98,13 @@ def test_layout_import_keeps_spellings_and_replacements_only():
 def test_second_alternative_is_kept():
     rows, _stats = import_dictionary_text(FIXTURE)
     swaps = [row["replace"] for row in rows if row["term"] == "plink"]
-    assert swaps == ["brack", "zorb"]
+    assert swaps == ["zorb", "brack"]
+
+
+def test_every_not_approved_spelling_gets_a_swap():
+    rows, _stats = import_dictionary_text(FIXTURE)
+    swaps = {(row["term"], row["replace"]) for row in rows if row["kind"] == "ste_swap"}
+    assert {("snib", "plinth"), ("snob", "plinth")} <= swaps
 
 
 def test_approved_nouns_get_regular_and_printed_plurals():
@@ -160,6 +169,22 @@ def test_cli_refuses_out_outside_glossary_local(
     assert exc.value.code == 2
     assert "--out must be" in capsys.readouterr().err
     assert not list(tmp_path.rglob("asd-ste100.json"))
+
+
+def test_cli_keeps_existing_overlay_when_nothing_is_approved(
+    tmp_path: Path, glossary_root: Path, capsys
+):
+    src = tmp_path / "dict.txt"
+    src.write_text("Not a dictionary page.\n", encoding="utf-8")
+    overlay = glossary_root / "local" / "asd-ste100.json"
+    overlay.parent.mkdir(parents=True)
+    good = '[{"term": "zorb", "replace": "zorb", "kind": "approved"}]\n'
+    overlay.write_text(good, encoding="utf-8")
+    with pytest.raises(SystemExit) as exc:
+        main(["import-asd", str(src)])
+    assert exc.value.code == 2
+    assert "no approved rows" in capsys.readouterr().err
+    assert overlay.read_text(encoding="utf-8") == good
 
 
 def test_pdf_input_runs_pdftotext(tmp_path: Path, glossary_root: Path, monkeypatch):

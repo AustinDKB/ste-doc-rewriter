@@ -29,6 +29,7 @@ Issue 9 is free of charge to all writers and users. Unauthorized distribution is
 strictly prohibited. The command writes schema-valid JSON to
 `glossary/local/asd-ste100.json` (term, part of speech, and replacement only) and
 that directory is gitignored. It refuses an `--out` directory outside `glossary/local/`.
+It writes nothing when the parse finds no approved words.
 Approved nouns also get their regular plural (`valve`, `valves`). A not-approved
 word gets no swap row when the same spelling is approved in any part of speech.
 The CLI loads it automatically when present. Do **not** commit ASD dictionary

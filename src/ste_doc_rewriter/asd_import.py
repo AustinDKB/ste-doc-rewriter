@@ -597,12 +597,12 @@ def rows_for(entries: list[Entry]) -> list[dict]:
     for entry in live:
         if entry.approved:
             continue
-        term = _terms_from_raw(entry.term_raw)[0]
-        if term in approved:
-            continue
-        for alt in entry.alts:
-            add(term, alt, "ste_swap", POS_MAP[entry.pos])
-    rows.sort(key=lambda row: (row["kind"], row["term"], row["pos"], row["replace"]))
+        for term in _terms_from_raw(entry.term_raw):
+            if term in approved:
+                continue
+            for alt in entry.alts:
+                add(term, alt, "ste_swap", POS_MAP[entry.pos])
+    rows.sort(key=lambda row: (row["kind"], row["term"], row["pos"]))
     return rows
 
 
@@ -650,7 +650,10 @@ def read_dictionary_source(path: Path) -> str:
 
 
 def write_overlay(rows: list[dict], out_dir: Path) -> Path:
-    """Write one schema-valid overlay file. Raises ValueError if a row is invalid."""
+    """Write one schema-valid overlay file. Raises ValueError if a row is invalid
+    or no row is approved."""
+    if not any(row.get("kind") == "approved" for row in rows):
+        raise ValueError("no approved rows parsed; overlay not written")
     validator = Draft202012Validator(load_schema())
     for i, row in enumerate(rows):
         errors = sorted(validator.iter_errors(row), key=lambda err: list(err.path))
