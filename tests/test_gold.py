@@ -2,6 +2,7 @@
 
 import importlib.util
 import json
+import re
 from collections import Counter
 from pathlib import Path
 
@@ -104,9 +105,10 @@ NOT_COVERED = {"simple", "fear", "price"}
 
 @pytest.mark.parametrize("pair", ALL_PAIRS, ids=_ids(ALL_PAIRS))
 def test_technical_terms_skip_words_no_category_covers(pair):
-    # A capitalized entry is a proper name or a column name (Price in a table), so it may stay.
+    # A capitalized entry may stay only as a name that the input itself uses.
     terms = pair["qc"]["ste_technical_terms"]
-    assert [t for t in terms if t in NOT_COVERED or t.removesuffix("s") in NOT_COVERED] == []
+    flagged = [t for t in terms if NOT_COVERED & {t.lower(), t.lower().removesuffix("s")}]
+    assert [t for t in flagged if t.islower() or not re.search(rf"\b{re.escape(t)}\b", pair["input"])] == []
 
 
 def test_id_lists_name_gold_pairs():
