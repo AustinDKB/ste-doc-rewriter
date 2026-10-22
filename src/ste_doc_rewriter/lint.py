@@ -253,7 +253,7 @@ def lint(
 
     Protected spans should already be placeholders (see protect.protect); each one
     counts as one neutral word. The approved_vocabulary check runs only when the
-    glossary has "approved" entries (a licensed list in glossary/local/).
+    glossary has "approved" entries (the ASD-STE100 overlay in glossary/local/).
     """
     max_words = 20 if mode == "procedure" else 25
     findings: list[Finding] = []
@@ -395,7 +395,7 @@ def format_text_report(result: LintResult) -> str:
     if "approved_vocabulary" in result.skipped:
         lines.append(
             "Skipped approved_vocabulary: no 'approved' entries in the glossary "
-            "(add a licensed STE word list under glossary/local/)."
+            "(run `ste-rewrite import-asd <pdf>` to write glossary/local/)."
         )
     if not result.findings:
         lines.append("No findings.")
