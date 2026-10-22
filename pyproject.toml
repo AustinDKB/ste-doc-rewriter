@@ -15,6 +15,9 @@ dev = [
   "pytest-xdist>=3.0",
   "pytest-cov>=5.0",
 ]
+harvest = [
+  "datasets>=3.0",
+]
 
 [project.scripts]
 ste-rewrite = "ste_doc_rewriter.cli:main"

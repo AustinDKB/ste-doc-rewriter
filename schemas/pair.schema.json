@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/AustinDKB/ste-doc-rewriter/schemas/pair.schema.json",
+  "title": "STE Doc Rewriter Gold Pair",
+  "description": "One JSONL line of data/gold/*.jsonl (PLAN_AND_SPEC.md section 11.1).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "domain", "messiness", "input", "output", "protected_spans", "source", "qc"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^pair_[0-9]{6}$"
+    },
+    "domain": {
+      "type": "string",
+      "enum": ["devops", "data_science", "swe", "design", "analytics", "quality", "other"]
+    },
+    "messiness": {
+      "type": "string",
+      "enum": ["ultra", "mid", "near"]
+    },
+    "input": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Messy technical text as harvested (an excerpt; personal data removed)."
+    },
+    "output": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Strict ASD-STE100 rewrite in Google developer documentation style, with the same facts, APIs and numbers."
+    },
+    "protected_spans": {
+      "type": "array",
+      "description": "Distinct spans protect() takes from the input; each must stay identical in the output.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["text", "kind"],
+        "properties": {
+          "text": {"type": "string", "minLength": 1},
+          "kind": {
+            "type": "string",
+            "enum": ["front_matter", "code", "link", "url", "path", "cli", "number", "product"]
+          }
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dataset"],
+      "properties": {
+        "dataset": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Hugging Face dataset id."
+        },
+        "ref": {
+          "type": "string",
+          "description": "Row id plus dataset revision: \"<row id>@<commit sha>\"."
+        }
+      }
+    },
+    "qc": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ste_lint_score", "concept_check", "human_reviewed"],
+      "properties": {
+        "ste_lint_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Repo lint score of the output as a fraction (lint percent / 100)."
+        },
+        "concept_check": {
+          "type": "string",
+          "enum": ["pass", "fail"]
+        },
+        "human_reviewed": {"type": "boolean"},
+        "ste_strict_unapproved": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Output words that are neither approved ASD-STE100 words nor technical names or verbs (a hand-checked word list; the goal is none)."
+        },
+        "ste_technical_terms": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Output words used as technical names or technical verbs instead of approved words, for review."
+        }
+      }
+    }
+  }
+}

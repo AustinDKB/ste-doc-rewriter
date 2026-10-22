@@ -32,3 +32,26 @@ approved spelling (for example `start`, `starts`, `started`). When any `approved
 is loaded, lint also flags words that are not approved words, glossary replacements,
 or protected spans. Without them, the lint report says the approved-vocabulary check
 was skipped.
+
+## Gold pair inputs (Phase 2)
+
+`data/gold/` inputs are excerpts of these Hugging Face datasets. Each input keeps its
+source license; the repository MIT license covers the code only. See
+[data/gold/README.md](data/gold/README.md) and the per-pair sources in
+[data/gold/ATTRIBUTION.md](data/gold/ATTRIBUTION.md). License checked on each dataset
+card on 2026-10-21.
+
+| Dataset | License | Attribution requirement |
+|---|---|---|
+| [HuggingFaceH4/stack-exchange-preferences](https://huggingface.co/datasets/HuggingFaceH4/stack-exchange-preferences) | CC BY-SA 4.0 | Name the author and link the Stack Exchange answer; share adaptations under CC BY-SA. |
+| [open-index/open-github-issues](https://huggingface.co/datasets/open-index/open-github-issues) | ODC-By 1.0 | Name the dataset; the GitHub Terms of Service apply to issue text. |
+| [elihoole/asrs-aviation-reports](https://huggingface.co/datasets/elihoole/asrs-aviation-reports) | Apache-2.0 | Keep the license notice. The NASA ASRS reports are U.S. government work. |
+| [stindardlogic/writing-quality-dpo-100k](https://huggingface.co/datasets/stindardlogic/writing-quality-dpo-100k) | Apache-2.0 | Keep the license notice. |
+| [grammarly/coedit](https://huggingface.co/datasets/grammarly/coedit) | Apache-2.0 | Keep the license notice. |
+| [chaojiang06/wiki_auto](https://huggingface.co/datasets/chaojiang06/wiki_auto) | CC BY-SA 3.0 | Credit Wikipedia contributors and link the article; share adaptations under CC BY-SA. |
+| [facebook/asset](https://huggingface.co/datasets/facebook/asset) | **Not used.** The card metadata says CC BY-SA 4.0, but its "Licensing Information" section says CC BY-NC 4.0. | — |
+
+The pilot outputs were checked by hand against a local copy of the ASD-STE100
+dictionary (Issue 9). No dictionary or rule text is in this repository; the gold
+records store only the output words that are not approved (`qc.ste_strict_unapproved`)
+and the words used as technical names or verbs (`qc.ste_technical_terms`).

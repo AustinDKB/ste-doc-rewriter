@@ -10,7 +10,9 @@ Offload repetitive **ASD-STE100 + Google technical documentation style** rewrite
 |---|---|
 | [docs/PLAN_AND_SPEC.md](docs/PLAN_AND_SPEC.md) | Full plan, architecture, data recipe, training, CI offload, and technical spec |
 | [schemas/glossary.schema.json](schemas/glossary.schema.json) | JSON Schema for glossary entries |
-| [SOURCES.md](SOURCES.md) | Dictionary sources and licenses (ASD dictionary is **not** redistributed) |
+| [schemas/pair.schema.json](schemas/pair.schema.json) | JSON Schema for gold pairs (`data/gold/*.jsonl`) |
+| [data/gold/README.md](data/gold/README.md) | Gold pairs: mix, how they were written, input licenses |
+| [SOURCES.md](SOURCES.md) | Dictionary and dataset sources and licenses (ASD dictionary is **not** redistributed) |
 
 ## One-line goal
 
@@ -24,6 +26,7 @@ Train once on ~10k messy→compliant pairs, ship LoRA + glossary + lint in CI, a
 - [x] Source URL pack for dictionaries and messy inputs
 - [x] Harvest glossary entries (starter STE-aligned + Google + CNCF/NIST/AWS/…)
 - [x] Protect → rewrite → dictionary → lint CLI
+- [x] Pilot: 50 gold pairs in strict STE + Google style ([data/gold/](data/gold/README.md))
 - [ ] Seed 500–1,000 gold pairs
 - [ ] Expand to ~10k and train Qwen3.5-9B LoRA
 - [ ] Wire CI rewrite hook
@@ -59,6 +62,17 @@ uv run ste-rewrite rewrite samples/messy_ops.md -o /tmp/out.md --report /tmp/rep
 #   glossary/local/*.json  ("approved" rows turn on the approved-vocabulary check)
 ```
 
+## Gold pairs
+
+```bash
+# Review the gold pairs side by side (writes data/raw/review.html)
+make review
+
+# Harvest a new candidate pool of messy inputs (streams from Hugging Face)
+uv sync --extra dev --extra harvest
+uv run python scripts/harvest_inputs.py
+```
+
 ## What Phase 1 protects
 
 YAML front matter, fenced/inline code, URLs, markdown link targets, file paths, CLI flags, numbers with units, and product names from `glossary/protect.json` (plus any `kind: protect` entries). Lint sees each protected span as one neutral word.
@@ -69,6 +83,8 @@ YAML front matter, fenced/inline code, URLs, markdown link targets, file paths, 
 glossary/           # schema-valid entry arrays (+ optional local/ overlay)
 src/ste_doc_rewriter/
 samples/            # small docs for manual / e2e checks
+data/gold/          # gold pairs (JSONL) + attribution; data/raw/ is gitignored
+scripts/            # input harvest, gold review page
 tests/
 ```
 
