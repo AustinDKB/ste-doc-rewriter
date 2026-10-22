@@ -8,8 +8,9 @@ documentation style (output). One JSON object per line, as in section 11.1 of
 | File | Content |
 |---|---|
 | `pilot.jsonl` | Phase 2 pilot: 50 pairs |
-| `spot_check.txt` | 8 ids for human review (15% of the pilot), hard cases first |
-| `hard_cases.txt` | 14 hard cases: dense jargon, code, logs, tables, long incident reports |
+| `batch-NN.jsonl` | Batches of 50 pairs after the pilot (pair_000051 and later) |
+| `spot_check.txt` | Ids for human review (15%: 8 in the pilot, 7 or 8 in each batch), hard cases first |
+| `hard_cases.txt` | Hard cases (10–15% of each file): dense jargon, code, logs, tables, long incident reports |
 | `ATTRIBUTION.md` | Source row, link, author and license of each input |
 
 To read the pairs side by side, run `make review`. It writes one self-contained
@@ -30,6 +31,15 @@ words marked, and filters for domain, messiness, length band and the spot check.
 
 Aviation reports and other non-software text use the domain `other`.
 
+## Batch mix
+
+Each batch has the pilot's length bands (5 sentence, 25 paragraph, 10 section,
+10 chunk) and messiness (20 ultra, 20 mid, 10 near).
+
+| File | Domains | Lint min / median | Spot check | Hard |
+|---|---|---|---|---|
+| `batch-01.jsonl` | swe 13, other 11, devops 10, design 7, data_science 6, quality 2, analytics 1 | 0.8667 / 1.0 | 8 | 8 |
+
 ## How the outputs were written
 
 - Every output was written by hand in a Claude Code session. No model API made
@@ -47,11 +57,22 @@ Aviation reports and other non-software text use the domain `other`.
   Pilot: min 0.9565, median 1.0, max 1.0. The glossary rows marked
   `ste_approved` (for example approximately → about) do not lower the score.
 - `qc.ste_strict_unapproved` lists the output words that are neither approved
-  nor technical. It is empty for all 50 pairs. `qc.ste_technical_terms` lists
+  nor technical. It is empty for all pairs. `qc.ste_technical_terms` lists
   the words that are accepted as technical names or verbs, for review.
-  These two lists come from a hand check against a local copy of the ASD-STE100
-  dictionary. The dictionary is not in this repository, so the tests do not
-  recompute them.
+  A technical name is the name of a specific thing in the domain (a product,
+  component, command, unit, standard, protocol, metric or role). Everyday
+  words (for example "simple", "years" or "two") must be approved words.
+  The batches use this rule; the pilot lists come from an earlier, less strict
+  check.
+- The batch lists come from a check against the ASD-STE100 overlay that
+  `ste-rewrite import-asd` writes to the gitignored `glossary/local/`. The
+  approved-vocabulary lint with that overlay also runs on each batch output:
+  each word that it flags is in `qc.ste_technical_terms`. The dictionary is
+  not in this repository, so the tests do not recompute these lists.
+- `qc.meaning_ok` and `qc.meaning_note` record the meaning check of each batch
+  pair: the note lists the facts kept and the text dropped (for example a
+  greeting). A pair that changes the meaning or adds a fact fails, and it is
+  rewritten before it enters a batch.
 - `qc.human_reviewed` is `false` until a person reviews the pair.
 
 ## Inputs

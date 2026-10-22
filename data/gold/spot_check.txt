@@ -1,4 +1,4 @@
-# Spot-check ids for human review (15% of the pilot), hard cases first.
+# Spot-check ids for human review (15% of each file: 8 for the pilot, 7 or 8 for each batch), hard cases first.
 pair_000009
 pair_000017
 pair_000013
@@ -7,3 +7,11 @@ pair_000026
 pair_000019
 pair_000022
 pair_000045
+pair_000092
+pair_000081
+pair_000057
+pair_000052
+pair_000066
+pair_000075
+pair_000089
+pair_000099
