@@ -69,9 +69,10 @@ Each batch has the pilot's length bands (5 sentence, 25 paragraph, 10 section,
   directions; numbers, units and time; body parts and medical terms;
   personal items, food and drink; weather and operating conditions; colors;
   document parts; quoted text; and roles, persons and organizations. A word
-  that no category covers (for example "simple", "home" or "fear") must be
-  an approved word, or the output is reworded. A fixed software term, such
-  as "home directory", counts as a technical name. The batches use this rule.
+  that no category covers (for example "simple", "fear" or "price") must be
+  an approved word, or the output is reworded. A word stays only as part of a
+  proper name or a fixed technical term, such as "home directory" or the
+  `Price1` column of a table. The batches use this rule.
   The pilot lists come from an earlier check, but they have no word that no
   category covers.
 - The batch lists come from a check against the ASD-STE100 overlay that

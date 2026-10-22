@@ -98,6 +98,17 @@ def test_strict_ste_field_and_lint_target():
     assert scores[len(scores) // 2] >= 0.85
 
 
+# data/gold/README.md names these as words that no ASD-STE100 rule 1.5 category covers.
+NOT_COVERED = {"simple", "fear", "price"}
+
+
+@pytest.mark.parametrize("pair", ALL_PAIRS, ids=_ids(ALL_PAIRS))
+def test_technical_terms_skip_words_no_category_covers(pair):
+    # A capitalized entry is a proper name or a column name (Price in a table), so it may stay.
+    terms = pair["qc"]["ste_technical_terms"]
+    assert [t for t in terms if t in NOT_COVERED or t.removesuffix("s") in NOT_COVERED] == []
+
+
 def test_id_lists_name_gold_pairs():
     spot = read_ids(GOLD_DIR / "spot_check.txt")
     hard = read_ids(GOLD_DIR / "hard_cases.txt")
