@@ -372,11 +372,12 @@ def _alts_from_chunks(chunks: list[str]) -> list[str]:
         if (
             phrase
             and phrase not in alts
-            and 1 <= len(words) <= (8 if "..." in phrase else 4)
+            and 1 <= len(words) <= 4
+            and "..." not in words
             and re.search(r"[a-z]", phrase)
             and " tn" not in f" {phrase}"
             and " tv" not in f" {phrase}"
-            and all(len(w) > 1 or w in {"a", "i", "..."} for w in words)
+            and all(len(w) > 1 or w in {"a", "i"} for w in words)
         ):
             alts.append(phrase)
 
@@ -609,6 +610,9 @@ def rows_for(entries: list[Entry], technical: set[str]) -> list[dict]:
         for term in _terms_from_raw(entry.term_raw):
             # STE permits a technical name or verb, and nothing reads pos.
             if term in approved or term in technical:
+                continue
+            # Only technical forms of the word itself (motor -> DRY-MOTOR (TV)).
+            if all(alt in technical and term in alt for alt in entry.alts):
                 continue
             for alt in entry.alts:
                 add(term, alt, "ste_swap", POS_MAP[entry.pos])

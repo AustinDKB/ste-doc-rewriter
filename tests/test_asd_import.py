@@ -59,6 +59,11 @@ spoof (v)          ZORB (v)                 ZORB IT.               Spoof it.
                    (WITH A SPOOF [TN])
 motz (v)           DRY-MOTZ (TV)            DRY-MOTZ THE FLIM.     Motz the flim dry.
                    WET-MOTZ (TV)            WET-MOTZ THE FLIM.     Motz the flim wet.
+                   BRACK (v)                BRACK THE FLIM.        Motz it again.
+drob (v)           DRY-DROB (TV)            DRY-DROB THE FLIM.     Drob the flim dry.
+                   WET-DROB (TV)            WET-DROB THE FLIM.     Drob the flim wet.
+spinx (v)          TURN … QUICKLY (v)       TURN IT QUICKLY.       Spinx it.
+                   BRACK (v)                BRACK IT.              Spinx it again.
 
 Issue 9                                 Part 2 - Dictionary                        Page 2-1-Z1
 2025-01-15
@@ -140,7 +145,19 @@ def test_no_swap_for_a_technical_name_or_verb():
 def test_technical_alternatives_on_separate_lines_stay_separate():
     rows, _stats = import_dictionary_text(FIXTURE)
     swaps = [row["replace"] for row in rows if row["term"] == "motz"]
-    assert swaps == ["dry-motz", "wet-motz"]
+    assert swaps == ["dry-motz", "wet-motz", "brack"]
+
+
+def test_no_swap_when_every_alternative_is_technical():
+    rows, _stats = import_dictionary_text(FIXTURE)
+    assert "drob" not in {row["term"] for row in rows}
+
+
+def test_no_swap_inserts_the_object_placeholder():
+    rows, _stats = import_dictionary_text(FIXTURE)
+    swaps = [row["replace"] for row in rows if row["term"] == "spinx"]
+    assert swaps == ["brack"]
+    assert not any("..." in row["replace"] or "…" in row["replace"] for row in rows)
 
 
 @pytest.fixture
