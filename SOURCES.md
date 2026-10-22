@@ -22,12 +22,15 @@ Build the overlay from your own copy of the ASD-STE100 Issue 9 PDF. The importer
 calls `pdftotext -layout` (poppler) for a PDF, or reads a layout dump directly:
 
 ```text
-uv run ste-rewrite import-asd /path/to/ASD-STE100_ISSUE9.pdf --out glossary/local/
+uv run ste-rewrite import-asd /path/to/ASD-STE100_ISSUE9.pdf
 ```
 
 Issue 9 is free of charge to all writers and users. Unauthorized distribution is
-strictly prohibited. The command writes schema-valid JSON under `glossary/local/`
-(term, part of speech, and replacement only) and that directory is gitignored.
+strictly prohibited. The command writes schema-valid JSON to
+`glossary/local/asd-ste100.json` (term, part of speech, and replacement only) and
+that directory is gitignored. It refuses an `--out` directory outside `glossary/local/`.
+Approved nouns also get their regular plural (`valve`, `valves`). A not-approved
+word gets no swap row when the same spelling is approved in any part of speech.
 The CLI loads it automatically when present. Do **not** commit ASD dictionary
 text to this public repository.
 

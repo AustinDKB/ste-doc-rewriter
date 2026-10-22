@@ -56,7 +56,7 @@ uv run ste-rewrite rewrite samples/messy_ops.md
 uv run ste-rewrite rewrite samples/messy_ops.md -o /tmp/out.md --report /tmp/report.json
 
 # Optional ASD-STE100 Issue 9 overlay (gitignored; do not commit the dictionary):
-#   uv run ste-rewrite import-asd ISSUE9.pdf --out glossary/local/
+#   uv run ste-rewrite import-asd ISSUE9.pdf   (writes glossary/local/asd-ste100.json)
 #   glossary/local/*.json  ("approved" rows turn on the approved-vocabulary check)
 ```
 

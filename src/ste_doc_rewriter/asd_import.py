@@ -285,9 +285,21 @@ def _terms_from_raw(raw: str) -> list[str]:
     return [_lower(base)]
 
 
-def _approved_spellings(raw: str, forms: list[str]) -> list[str]:
+def _plural(term: str) -> str:
+    if not term[-1:].isalpha():
+        return ""
+    if re.search(r"(?:s|x|z|ch|sh)$", term):
+        return term + "es"
+    if re.search(r"[^aeiou]y$", term):
+        return term[:-1] + "ies"
+    return term + "s"
+
+
+def _approved_spellings(raw: str, forms: list[str], pos: str) -> list[str]:
+    terms = _terms_from_raw(raw)
+    plurals = [_plural(t) for t in terms] if pos == "n" else []
     seen: list[str] = []
-    for term in _terms_from_raw(raw) + [_lower(f) for f in forms]:
+    for term in terms + [_lower(f) for f in forms] + plurals:
         if term and term not in seen:
             seen.append(term)
     return seen
@@ -562,37 +574,34 @@ def _head_width(raw: str) -> int:
 def rows_for(entries: list[Entry]) -> list[dict]:
     rows: list[dict] = []
     seen: set[tuple] = set()
-    for entry in entries:
-        if entry.skip:
-            continue
-        pos = POS_MAP[entry.pos]
+
+    def add(term: str, replace: str, kind: str, pos: str) -> None:
+        key = (term, replace, kind, pos)
+        if key in seen:
+            return
+        seen.add(key)
+        rows.append({
+            "term": term,
+            "replace": replace,
+            "kind": kind,
+            "pos": pos,
+            "source_url": SOURCE,
+        })
+
+    live = [entry for entry in entries if not entry.skip]
+    for entry in live:
         if entry.approved:
-            for spelling in _approved_spellings(entry.term_raw, entry.forms):
-                key = (spelling, spelling, "approved", pos)
-                if key in seen:
-                    continue
-                seen.add(key)
-                rows.append({
-                    "term": spelling,
-                    "replace": spelling,
-                    "kind": "approved",
-                    "pos": pos,
-                    "source_url": SOURCE,
-                })
-        else:
-            for alt in entry.alts:
-                term = _terms_from_raw(entry.term_raw)[0]
-                key = (term, alt, "ste_swap", pos)
-                if key in seen:
-                    continue
-                seen.add(key)
-                rows.append({
-                    "term": term,
-                    "replace": alt,
-                    "kind": "ste_swap",
-                    "pos": pos,
-                    "source_url": SOURCE,
-                })
+            for spelling in _approved_spellings(entry.term_raw, entry.forms, entry.pos):
+                add(spelling, spelling, "approved", POS_MAP[entry.pos])
+    approved = {row["term"] for row in rows}
+    for entry in live:
+        if entry.approved:
+            continue
+        term = _terms_from_raw(entry.term_raw)[0]
+        if term in approved:
+            continue
+        for alt in entry.alts:
+            add(term, alt, "ste_swap", POS_MAP[entry.pos])
     rows.sort(key=lambda row: (row["kind"], row["term"], row["pos"], row["replace"]))
     return rows
 

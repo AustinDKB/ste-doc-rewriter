@@ -84,10 +84,19 @@ def cmd_rewrite(args: argparse.Namespace) -> int:
     return 0
 
 
+def _overlay_dir(out: str | None) -> Path:
+    local = DEFAULT_GLOSSARY_DIR / "local"
+    path = Path(out) if out else local
+    if not path.resolve().is_relative_to(local.resolve()):
+        raise ValueError(f"--out must be {local} or a directory under it (gitignored)")
+    return path
+
+
 def cmd_import_asd(args: argparse.Namespace) -> int:
+    out_dir = _overlay_dir(args.out)
     source = Path(args.source)
     rows, stats = import_dictionary_text(read_dictionary_source(source))
-    path = write_overlay(rows, Path(args.out))
+    path = write_overlay(rows, out_dir)
     skipped = sum(stats.skipped.values())
     print(f"approved rows: {stats.approved_rows}")
     print(f"swap rows: {stats.swap_rows}")
@@ -193,8 +202,10 @@ def build_parser() -> argparse.ArgumentParser:
     )
     imp.add_argument(
         "--out",
-        required=True,
-        help="Directory for the gitignored overlay JSON",
+        help=(
+            "Overlay directory, under the gitignored glossary/local "
+            f"(default: {DEFAULT_GLOSSARY_DIR / 'local'})"
+        ),
     )
     imp.set_defaults(func=cmd_import_asd)
 
