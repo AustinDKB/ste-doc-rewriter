@@ -62,7 +62,8 @@ card on 2026-10-21.
 | [chaojiang06/wiki_auto](https://huggingface.co/datasets/chaojiang06/wiki_auto) | CC BY-SA 3.0 | Credit Wikipedia contributors and link the article; share adaptations under CC BY-SA. |
 | [facebook/asset](https://huggingface.co/datasets/facebook/asset) | **Not used.** The card metadata says CC BY-SA 4.0, but its "Licensing Information" section says CC BY-NC 4.0. | — |
 
-The pilot outputs were checked by hand against a local copy of the ASD-STE100
-dictionary (Issue 9). No dictionary or rule text is in this repository; the gold
-records store only the output words that are not approved (`qc.ste_strict_unapproved`)
-and the words used as technical names or verbs (`qc.ste_technical_terms`).
+The gold outputs were checked against a local copy of the ASD-STE100 dictionary
+(Issue 9); [data/gold/README.md](data/gold/README.md) says how. No dictionary or rule
+text is in this repository; the gold records store only the output words that are not
+approved (`qc.ste_strict_unapproved`) and the words used as technical names or verbs
+(`qc.ste_technical_terms`).

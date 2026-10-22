@@ -118,12 +118,12 @@ input, so use each pair (input and output) under the input's license.
 
 | Dataset | License | Pairs | Attribution |
 |---|---|---|---|
-| [HuggingFaceH4/stack-exchange-preferences](https://huggingface.co/datasets/HuggingFaceH4/stack-exchange-preferences) | CC BY-SA 4.0 | 14 | Name the author and link the answer (see `ATTRIBUTION.md`); share-alike |
-| [open-index/open-github-issues](https://huggingface.co/datasets/open-index/open-github-issues) | ODC-By 1.0 | 7 | Name the dataset; the GitHub Terms of Service apply to the issue text |
-| [elihoole/asrs-aviation-reports](https://huggingface.co/datasets/elihoole/asrs-aviation-reports) | Apache-2.0 | 4 | Keep the license notice; NASA ASRS reports are U.S. government work |
-| [stindardlogic/writing-quality-dpo-100k](https://huggingface.co/datasets/stindardlogic/writing-quality-dpo-100k) | Apache-2.0 | 12 | Keep the license notice |
-| [grammarly/coedit](https://huggingface.co/datasets/grammarly/coedit) | Apache-2.0 | 3 | Keep the license notice |
-| [chaojiang06/wiki_auto](https://huggingface.co/datasets/chaojiang06/wiki_auto) | CC BY-SA 3.0 | 10 | Credit Wikipedia contributors and link the source; share-alike |
+| [HuggingFaceH4/stack-exchange-preferences](https://huggingface.co/datasets/HuggingFaceH4/stack-exchange-preferences) | CC BY-SA 4.0 | 110 | Name the author and link the answer (see `ATTRIBUTION.md`); share-alike |
+| [open-index/open-github-issues](https://huggingface.co/datasets/open-index/open-github-issues) | ODC-By 1.0 | 78 | Name the dataset; the GitHub Terms of Service apply to the issue text |
+| [elihoole/asrs-aviation-reports](https://huggingface.co/datasets/elihoole/asrs-aviation-reports) | Apache-2.0 | 26 | Keep the license notice; NASA ASRS reports are U.S. government work |
+| [stindardlogic/writing-quality-dpo-100k](https://huggingface.co/datasets/stindardlogic/writing-quality-dpo-100k) | Apache-2.0 | 13 | Keep the license notice |
+| [grammarly/coedit](https://huggingface.co/datasets/grammarly/coedit) | Apache-2.0 | 13 | Keep the license notice |
+| [chaojiang06/wiki_auto](https://huggingface.co/datasets/chaojiang06/wiki_auto) | CC BY-SA 3.0 | 60 | Credit Wikipedia contributors and link the source; share-alike |
 
 CC BY-SA is share-alike: if you share an adaptation of those pairs, you must
 share it under the same license.
