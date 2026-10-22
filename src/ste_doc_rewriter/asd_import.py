@@ -59,6 +59,7 @@ TOKEN_RE = re.compile(
     rf"|…+"
     rf"|\.\.\."
 )
+TECHNICAL_RE = re.compile(r"([A-Z][A-Z0-9'’/-]*)[ \t]*[(\[]T[NV][)\]]")
 SOURCE = "https://www.asd-ste100.org/"
 
 
@@ -439,6 +440,9 @@ def _alts_from_chunks(chunks: list[str]) -> list[str]:
                     flush()
                 else:
                     pending.append(tok)
+        # A line that ends in (TN) or (TV) closes the alternative.
+        if toks[-1] in {"(TN)", "(TV)"}:
+            flush()
     flush()
     return alts
 
@@ -571,7 +575,12 @@ def _head_width(raw: str) -> int:
     return max(1, len(base.split()))
 
 
-def rows_for(entries: list[Entry]) -> list[dict]:
+def technical_words(text: str) -> set[str]:
+    """Words the dictionary tags as a technical name or verb."""
+    return {_lower(word) for word in TECHNICAL_RE.findall(text)}
+
+
+def rows_for(entries: list[Entry], technical: set[str]) -> list[dict]:
     rows: list[dict] = []
     seen: set[tuple] = set()
 
@@ -598,7 +607,8 @@ def rows_for(entries: list[Entry]) -> list[dict]:
         if entry.approved:
             continue
         for term in _terms_from_raw(entry.term_raw):
-            if term in approved:
+            # STE permits a technical name or verb, and nothing reads pos.
+            if term in approved or term in technical:
                 continue
             for alt in entry.alts:
                 add(term, alt, "ste_swap", POS_MAP[entry.pos])
@@ -619,7 +629,7 @@ OVERLAY_NAME = "asd-ste100.json"
 def import_dictionary_text(text: str) -> tuple[list[dict], ImportStats]:
     """Parse a layout dump into schema-shaped rows and skip counts."""
     entries, skipped = parse_entries(body_lines(text))
-    rows = rows_for(entries)
+    rows = rows_for(entries, technical_words(text))
     reasons = Counter(reason for _, reason in skipped)
     return rows, ImportStats(
         approved_rows=sum(row["kind"] == "approved" for row in rows),

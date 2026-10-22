@@ -53,6 +53,12 @@ re- (prefix)       In general, use
                    the other word.
 wirex (v)          BRACK (v)                BRACK THE FLIM.        Wirex the flim.
                    (WITH A ZORB [TN])
+klonk (v)          KLONK (TN)               PUT A KLONK ON IT.     Klonk it.
+                   BRACK (v)                BRACK IT.              Klonk it again.
+spoof (v)          ZORB (v)                 ZORB IT.               Spoof it.
+                   (WITH A SPOOF [TN])
+motz (v)           DRY-MOTZ (TV)            DRY-MOTZ THE FLIM.     Motz the flim dry.
+                   WET-MOTZ (TV)            WET-MOTZ THE FLIM.     Motz the flim wet.
 
 Issue 9                                 Part 2 - Dictionary                        Page 2-1-Z1
 2025-01-15
@@ -122,6 +128,19 @@ def test_no_swap_for_a_spelling_approved_in_another_part_of_speech():
     assert "flim" not in swap_terms
     assert "glorps" not in swap_terms
     assert {"plink", "snarp", "wibble", "glip from", "wirex"} <= swap_terms
+
+
+def test_no_swap_for_a_technical_name_or_verb():
+    rows, _stats = import_dictionary_text(FIXTURE)
+    swap_terms = {row["term"] for row in rows if row["kind"] == "ste_swap"}
+    assert "klonk" not in swap_terms
+    assert "spoof" not in swap_terms
+
+
+def test_technical_alternatives_on_separate_lines_stay_separate():
+    rows, _stats = import_dictionary_text(FIXTURE)
+    swaps = [row["replace"] for row in rows if row["term"] == "motz"]
+    assert swaps == ["dry-motz", "wet-motz"]
 
 
 @pytest.fixture
