@@ -116,3 +116,11 @@ def test_etc_before_product_name_keeps_sentence_break():
     result = rewrite("Collect logs, metrics, etc. Kubernetes stores them.", glossary_dir=GLOSSARY)
     assert result.text == "Collect logs, metrics, and so on. Kubernetes stores them."
     assert result.lint.sentence_count == 2
+
+
+def test_strict_ste_keeps_approved_words_that_plain_language_swaps():
+    # PlainLanguage.gov swaps approximately/sufficient/subsequent, but ASD-STE100 approves them.
+    text = "Wait approximately 10 seconds. Make sure that the subsequent step has sufficient memory."
+    result = rewrite(text, glossary_dir=GLOSSARY)
+    assert result.text == text
+    assert not [f for f in result.lint.findings if f.rule == "not_approved"]

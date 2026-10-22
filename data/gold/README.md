@@ -44,7 +44,8 @@ Aviation reports and other non-software text use the domain `other`.
 - Google style is used where it agrees with STE: second person, present tense,
   sentence-case headings, numbered steps and code font.
 - `qc.ste_lint_score` is the repo lint score (`ste-rewrite lint`, as a fraction).
-  Pilot: min 0.875, median 1.0, max 1.0.
+  Pilot: min 0.9565, median 1.0, max 1.0. The glossary rows marked
+  `ste_approved` (for example approximately → about) do not lower the score.
 - `qc.ste_strict_unapproved` lists the output words that are neither approved
   nor technical. It is empty for all 50 pairs. `qc.ste_technical_terms` lists
   the words that are accepted as technical names or verbs, for review.
