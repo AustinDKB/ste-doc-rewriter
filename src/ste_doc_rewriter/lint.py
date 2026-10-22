@@ -395,7 +395,7 @@ def format_text_report(result: LintResult) -> str:
     if "approved_vocabulary" in result.skipped:
         lines.append(
             "Skipped approved_vocabulary: no 'approved' entries in the glossary "
-            "(add a licensed STE word list under glossary/local/)."
+            "(run `ste-rewrite import-asd <pdf>` to write glossary/local/)."
         )
     if not result.findings:
         lines.append("No findings.")

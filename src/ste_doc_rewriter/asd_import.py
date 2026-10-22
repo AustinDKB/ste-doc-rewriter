@@ -102,9 +102,7 @@ def _is_footer(line: str) -> bool:
         return False
     if s.startswith(("Issue 9", "Page 2-", "2025-", "2024-")):
         return True
-    if "Part 2" in s and "Dictionary" in s and ("Issue" in s or "Page" in s):
-        return True
-    return False
+    return "Part 2" in s and "Dictionary" in s and ("Issue" in s or "Page" in s)
 
 
 def _header(lines: list[str]) -> tuple[int, int, int, int] | None:
@@ -219,7 +217,7 @@ def _leading_form(text: str) -> str:
 
 
 def _form_phrases(text: str, width: int) -> list[str]:
-    body = re.sub(r"^\(also\s+", "", text.strip(), flags=re.I).strip("() ")
+    body = re.sub(r"^\(also\s+", "", text.strip(), flags=re.IGNORECASE).strip("() ")
     phrases: list[str] = []
     for part in body.split(","):
         words = [w for w in part.strip().split() if re.fullmatch(r"[A-Z][A-Z0-9'’/-]*", w)]
@@ -345,7 +343,7 @@ def _strip_usage_notes(chunks: list[str]) -> list[str]:
                 out.append("")
             continue
         if not skipping and re.match(r"^\((?!TN\)|TV\))", s) and (
-            "[TN]" in s or "[TV]" in s or re.match(r"^\((?:WITH|A|AN|FOR|ON|IN|BY)\b", s, re.I)
+            "[TN]" in s or "[TV]" in s or re.match(r"^\((?:WITH|A|AN|FOR|ON|IN|BY)\b", s, re.IGNORECASE)
         ):
             if s.count("(") > s.count(")"):
                 skipping = True
