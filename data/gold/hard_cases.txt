@@ -1,0 +1,15 @@
+# Hard cases: dense jargon, code, logs, tables or long incident narratives.
+pair_000001
+pair_000002
+pair_000003
+pair_000006
+pair_000007
+pair_000008
+pair_000009
+pair_000013
+pair_000015
+pair_000017
+pair_000018
+pair_000019
+pair_000024
+pair_000026

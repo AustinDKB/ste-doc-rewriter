@@ -1,0 +1,9 @@
+# Spot-check ids for human review (15% of the pilot), hard cases first.
+pair_000009
+pair_000017
+pair_000013
+pair_000024
+pair_000026
+pair_000019
+pair_000022
+pair_000045
