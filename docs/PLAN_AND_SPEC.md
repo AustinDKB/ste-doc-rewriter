@@ -436,13 +436,14 @@ ste-doc-rewriter/
     google_word_list.json
     protect.json
     domains/*.json
-    local/                       # gitignored optional licensed STE overlay
+    local/                       # gitignored ASD-STE100 overlay (ste-rewrite import-asd)
   src/ste_doc_rewriter/
     protect.py
     dictionary.py
     lint.py
     glossary.py
     pipeline.py
+    asd_import.py
     cli.py
   train/                         # Phase 4
     sft_config.yaml

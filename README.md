@@ -58,7 +58,8 @@ uv run ste-rewrite lint --mode procedure path/to/doc.md
 uv run ste-rewrite rewrite samples/messy_ops.md
 uv run ste-rewrite rewrite samples/messy_ops.md -o /tmp/out.md --report /tmp/report.json
 
-# Optional licensed ASD dictionary overlay (gitignored):
+# Optional ASD-STE100 Issue 9 overlay (gitignored; do not commit the dictionary):
+#   uv run ste-rewrite import-asd ISSUE9.pdf   (writes glossary/local/asd-ste100.json)
 #   glossary/local/*.json  ("approved" rows turn on the approved-vocabulary check)
 ```
 
