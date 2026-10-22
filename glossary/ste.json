@@ -60,7 +60,8 @@
     "pos": "adverb",
     "domains": ["general"],
     "source_url": "https://www.plainlanguage.gov/guidelines/words/",
-    "notes": "PlainLanguage.gov word tip; not from the ASD-STE100 dictionary"
+    "notes": "PlainLanguage.gov word tip; not from the ASD-STE100 dictionary. ASD-STE100 approves \"approximately\" (adverb), so strict STE keeps it",
+    "ste_approved": true
   },
   {
     "term": "accomplish",
@@ -105,7 +106,8 @@
     "pos": "adjective",
     "domains": ["general"],
     "source_url": "https://www.plainlanguage.gov/guidelines/words/",
-    "notes": "PlainLanguage.gov word tip; not from the ASD-STE100 dictionary"
+    "notes": "PlainLanguage.gov word tip; not from the ASD-STE100 dictionary. ASD-STE100 approves \"sufficient\" (adjective), so strict STE keeps it",
+    "ste_approved": true
   },
   {
     "term": "assist",
@@ -210,7 +212,8 @@
     "pos": "adjective",
     "domains": ["general"],
     "source_url": "https://www.plainlanguage.gov/guidelines/words/",
-    "notes": "PlainLanguage.gov word tip; not from the ASD-STE100 dictionary"
+    "notes": "PlainLanguage.gov word tip; not from the ASD-STE100 dictionary. ASD-STE100 approves \"subsequent\" (adjective), so strict STE keeps it",
+    "ste_approved": true
   },
   {
     "term": "therefore",

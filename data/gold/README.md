@@ -8,8 +8,9 @@ documentation style (output). One JSON object per line, as in section 11.1 of
 | File | Content |
 |---|---|
 | `pilot.jsonl` | Phase 2 pilot: 50 pairs |
-| `spot_check.txt` | 8 ids for human review (15% of the pilot), hard cases first |
-| `hard_cases.txt` | 14 hard cases: dense jargon, code, logs, tables, long incident reports |
+| `batch-NN.jsonl` | Batches of 50 pairs after the pilot (pair_000051 and later) |
+| `spot_check.txt` | Ids for human review (15%: 8 in the pilot, 7 or 8 in each batch), hard cases first |
+| `hard_cases.txt` | Hard cases (14 in the pilot, 7 or 8 in each batch): dense jargon, code, logs, tables, long incident reports |
 | `ATTRIBUTION.md` | Source row, link, author and license of each input |
 
 To read the pairs side by side, run `make review`. It writes one self-contained
@@ -30,6 +31,19 @@ words marked, and filters for domain, messiness, length band and the spot check.
 
 Aviation reports and other non-software text use the domain `other`.
 
+## Batch mix
+
+Each batch has the pilot's length bands (5 sentence, 25 paragraph, 10 section,
+10 chunk) and messiness (20 ultra, 20 mid, 10 near).
+
+| File | Domains | Lint min / median | Spot check | Hard |
+|---|---|---|---|---|
+| `batch-01.jsonl` | swe 13, other 11, devops 10, design 7, data_science 6, quality 2, analytics 1 | 0.8667 / 1.0 | 8 | 8 |
+| `batch-02.jsonl` | swe 18, devops 17, other 6, data_science 5, design 3, quality 1 | 0.8 / 1.0 | 8 | 8 |
+| `batch-03.jsonl` | devops 15, swe 12, other 10, data_science 9, quality 2, design 2 | 0.8333 / 1.0 | 7 | 8 |
+| `batch-04.jsonl` | devops 14, other 13, swe 10, data_science 7, design 4, quality 2 | 0.8182 / 1.0 | 7 | 7 |
+| `batch-05.jsonl` | devops 14, other 13, swe 11, data_science 7, quality 3, design 2 | 0.8667 / 1.0 | 7 | 8 |
+
 ## How the outputs were written
 
 - Every output was written by hand in a Claude Code session. No model API made
@@ -44,13 +58,32 @@ Aviation reports and other non-software text use the domain `other`.
 - Google style is used where it agrees with STE: second person, present tense,
   sentence-case headings, numbered steps and code font.
 - `qc.ste_lint_score` is the repo lint score (`ste-rewrite lint`, as a fraction).
-  Pilot: min 0.875, median 1.0, max 1.0.
+  Pilot: min 0.9565, median 1.0, max 1.0. The glossary rows marked
+  `ste_approved` (for example approximately → about) do not lower the score.
 - `qc.ste_strict_unapproved` lists the output words that are neither approved
-  nor technical. It is empty for all 50 pairs. `qc.ste_technical_terms` lists
+  nor technical. It is empty for all pairs. `qc.ste_technical_terms` lists
   the words that are accepted as technical names or verbs, for review.
-  These two lists come from a hand check against a local copy of the ASD-STE100
-  dictionary. The dictionary is not in this repository, so the tests do not
-  recompute them.
+  A technical name is a word that one of the technical-name categories of
+  ASD-STE100 rule 1.5 covers. In short: products, parts, tools and materials;
+  systems and facilities; science, math and engineering terms; places and
+  directions; numbers, units and time; body parts and medical terms;
+  personal items, food and drink; weather and operating conditions; colors;
+  document parts; quoted text; and roles, persons and organizations. A word
+  that no category covers (for example "simple", "fear" or "price") must be
+  an approved word, or the output is reworded. A word stays only as part of a
+  proper name or a fixed technical term, such as "home directory" or the
+  `Price1` column of a table. The batches use this rule.
+  The pilot lists come from an earlier check, but they have no word that no
+  category covers.
+- The batch lists come from a check against the ASD-STE100 overlay that
+  `ste-rewrite import-asd` writes to the gitignored `glossary/local/`. The
+  approved-vocabulary lint with that overlay also runs on each batch output:
+  each word that it flags is in `qc.ste_technical_terms`. The dictionary is
+  not in this repository, so the tests do not recompute these lists.
+- `qc.meaning_ok` and `qc.meaning_note` record the meaning check of each batch
+  pair: the note lists the facts kept and the text dropped (for example a
+  greeting). A pair that changes the meaning or adds a fact fails, and it is
+  rewritten before it enters a batch.
 - `qc.human_reviewed` is `false` until a person reviews the pair.
 
 ## Inputs
@@ -86,12 +119,12 @@ input, so use each pair (input and output) under the input's license.
 
 | Dataset | License | Pairs | Attribution |
 |---|---|---|---|
-| [HuggingFaceH4/stack-exchange-preferences](https://huggingface.co/datasets/HuggingFaceH4/stack-exchange-preferences) | CC BY-SA 4.0 | 14 | Name the author and link the answer (see `ATTRIBUTION.md`); share-alike |
-| [open-index/open-github-issues](https://huggingface.co/datasets/open-index/open-github-issues) | ODC-By 1.0 | 7 | Name the dataset; the GitHub Terms of Service apply to the issue text |
-| [elihoole/asrs-aviation-reports](https://huggingface.co/datasets/elihoole/asrs-aviation-reports) | Apache-2.0 | 4 | Keep the license notice; NASA ASRS reports are U.S. government work |
-| [stindardlogic/writing-quality-dpo-100k](https://huggingface.co/datasets/stindardlogic/writing-quality-dpo-100k) | Apache-2.0 | 12 | Keep the license notice |
-| [grammarly/coedit](https://huggingface.co/datasets/grammarly/coedit) | Apache-2.0 | 3 | Keep the license notice |
-| [chaojiang06/wiki_auto](https://huggingface.co/datasets/chaojiang06/wiki_auto) | CC BY-SA 3.0 | 10 | Credit Wikipedia contributors and link the source; share-alike |
+| [HuggingFaceH4/stack-exchange-preferences](https://huggingface.co/datasets/HuggingFaceH4/stack-exchange-preferences) | CC BY-SA 4.0 | 110 | Name the author and link the answer (see `ATTRIBUTION.md`); share-alike |
+| [open-index/open-github-issues](https://huggingface.co/datasets/open-index/open-github-issues) | ODC-By 1.0 | 78 | Name the dataset; the GitHub Terms of Service apply to the issue text |
+| [elihoole/asrs-aviation-reports](https://huggingface.co/datasets/elihoole/asrs-aviation-reports) | Apache-2.0 | 26 | Keep the license notice; NASA ASRS reports are U.S. government work |
+| [stindardlogic/writing-quality-dpo-100k](https://huggingface.co/datasets/stindardlogic/writing-quality-dpo-100k) | Apache-2.0 | 13 | Keep the license notice |
+| [grammarly/coedit](https://huggingface.co/datasets/grammarly/coedit) | Apache-2.0 | 13 | Keep the license notice |
+| [chaojiang06/wiki_auto](https://huggingface.co/datasets/chaojiang06/wiki_auto) | CC BY-SA 3.0 | 60 | Credit Wikipedia contributors and link the source; share-alike |
 
 CC BY-SA is share-alike: if you share an adaptation of those pairs, you must
 share it under the same license.

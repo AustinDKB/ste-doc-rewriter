@@ -53,6 +53,11 @@
       "type": "boolean",
       "default": false
     },
+    "ste_approved": {
+      "type": "boolean",
+      "default": false,
+      "description": "The term is an approved ASD-STE100 word in this part of speech. Strict STE keeps it, so lint does not flag it and rewrite does not swap it."
+    },
     "source_url": {
       "type": "string",
       "format": "uri"

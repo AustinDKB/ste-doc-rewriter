@@ -7,7 +7,7 @@ wording) plus a `source_url`. They are **not** a copy of any copyrighted diction
 |---|---|---|---|
 | [ASD-STE100](https://www.asd-ste100.org/) Issue 9 | Optional local overlay built by `ste-rewrite import-asd` from a copy of the Issue 9 PDF you already have. The committed glossary still has rule *ideas* only (sentence length, voice, noun clusters). **No** ASD dictionary text is committed. | Free of charge to all writers and users. Unauthorized distribution is strictly prohibited. Copyright ASD / ASD-STE100. | `glossary/local/*.json` (gitignored). The CLI loads it when present. |
 | [dfch/biz.dfch.AsdSte100Vocab](https://github.com/dfch/biz.dfch.AsdSte100Vocab) | **Not harvested.** Checked 2026-10-20: code is AGPL-3.0 and the README states the ASD-STE100 vocabulary is copyright ASD, so it does not clearly allow redistribution in this MIT repo. | AGPL-3.0 + ASD copyright | — |
-| [PlainLanguage.gov word tips](https://www.plainlanguage.gov/guidelines/words/) | Every row in `glossary/ste.json`. These are plain-language swaps in STE style, **not** ASD-STE100 dictionary entries; each row's `notes` says so. | U.S. government work (public domain). | `glossary/ste.json` |
+| [PlainLanguage.gov word tips](https://www.plainlanguage.gov/guidelines/words/) | Every row in `glossary/ste.json`. These are plain-language swaps in STE style, **not** ASD-STE100 dictionary entries; each row's `notes` says so. Three rows (`approximately`, `sufficient`, `subsequent`) replace a word that ASD-STE100 approves, so they have `"ste_approved": true` and lint and rewrite skip them (strict STE keeps the word). | U.S. government work (public domain). | `glossary/ste.json` |
 | [Google developer style word list](https://developers.google.com/style/word-list) | Prefer/avoid pairs restated as `prefer` / `ste_swap` entries. | Google developer docs; follow Google terms when redistributing. We store short prefer/avoid facts with attribution, not full guide text. | `glossary/google_word_list.json` |
 | [CNCF Glossary](https://glossary.cncf.io/) | Starter acronym / term expansions. | Creative Commons (see CNCF glossary site). | `glossary/domains/cncf.json` |
 | [NIST Glossary](https://csrc.nist.gov/glossary) | Starter security term expansions. | U.S. government work. | `glossary/domains/nist.json` |
@@ -62,7 +62,8 @@ card on 2026-10-21.
 | [chaojiang06/wiki_auto](https://huggingface.co/datasets/chaojiang06/wiki_auto) | CC BY-SA 3.0 | Credit Wikipedia contributors and link the article; share adaptations under CC BY-SA. |
 | [facebook/asset](https://huggingface.co/datasets/facebook/asset) | **Not used.** The card metadata says CC BY-SA 4.0, but its "Licensing Information" section says CC BY-NC 4.0. | — |
 
-The pilot outputs were checked by hand against a local copy of the ASD-STE100
-dictionary (Issue 9). No dictionary or rule text is in this repository; the gold
-records store only the output words that are not approved (`qc.ste_strict_unapproved`)
-and the words used as technical names or verbs (`qc.ste_technical_terms`).
+The gold outputs were checked against a local copy of the ASD-STE100 dictionary
+(Issue 9); [data/gold/README.md](data/gold/README.md) says how. No dictionary or rule
+text is in this repository; the gold records store only the output words that are not
+approved (`qc.ste_strict_unapproved`) and the words used as technical names or verbs
+(`qc.ste_technical_terms`).

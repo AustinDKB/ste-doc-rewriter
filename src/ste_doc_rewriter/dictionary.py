@@ -46,13 +46,16 @@ def compile_rules(
 ) -> list[tuple[dict[str, Any], re.Pattern[str]]]:
     """Entries of the given kinds with their match patterns, longest term first.
 
-    Identity rows (term == replace) only record domain coverage, so they are left out.
+    Identity rows (term == replace) only record domain coverage, and "ste_approved"
+    rows swap an approved ASD-STE100 word that strict STE keeps, so both are left out.
     """
     kinds = frozenset(kinds)
     rules = [
         (e, word_pattern(e["term"], bool(e.get("case_sensitive", False))))
         for e in entries
-        if e.get("kind") in kinds and e["term"].lower() != e["replace"].lower()
+        if e.get("kind") in kinds
+        and e["term"].lower() != e["replace"].lower()
+        and not e.get("ste_approved", False)
     ]
     return sorted(rules, key=lambda r: len(r[0]["term"]), reverse=True)
 

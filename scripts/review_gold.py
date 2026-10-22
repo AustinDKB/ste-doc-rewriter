@@ -2,8 +2,8 @@
 
 Each pair shows the input and the output side by side, with the protected spans
 highlighted in both columns and the words that the output changed marked. Filters
-select domain, messiness and length band; a toggle shows only the spot-check ids
-(data/gold/spot_check.txt). The page has no external scripts, styles or fonts.
+select file, domain, messiness and length band; a toggle shows only the spot-check
+ids (data/gold/spot_check.txt). Each card shows the meaning check (qc.meaning_note). The page has no external scripts, styles or fonts.
 
     uv run python scripts/review_gold.py          # or: make review
 """
@@ -71,7 +71,7 @@ def marked(text: str, protected: list[tuple[int, int]], changed: list[tuple[int,
     return "".join(out)
 
 
-def card(pair: dict[str, Any], spot: list[str], hard: set[str]) -> str:
+def card(pair: dict[str, Any], spot: list[str], hard: set[str], file: str = "") -> str:
     qc, source = pair["qc"], pair["source"]
     spans = [s["text"] for s in pair["protected_spans"]]
     band = length_band(pair["input"]) or "none"
@@ -83,18 +83,26 @@ def card(pair: dict[str, Any], spot: list[str], hard: set[str]) -> str:
         strict = f'<span class="tag bad">unapproved: {html.escape(", ".join(unapproved))}</span>'
     else:
         strict = '<span class="tag ok">unapproved: none</span>'
+    if "meaning_ok" not in qc:
+        meaning = '<span class="tag">meaning: not checked</span>'
+    elif qc["meaning_ok"]:
+        meaning = '<span class="tag ok">meaning: kept</span>'
+    else:
+        meaning = '<span class="tag bad">meaning: changed</span>'
     tags = [
         f'<span class="tag">{pair["domain"]}</span>',
         f'<span class="tag">{pair["messiness"]}</span>',
         f'<span class="tag">{band}</span>',
         f'<span class="tag">lint {qc["ste_lint_score"]:.2f}</span>',
         strict,
+        meaning,
     ]
     if pair["id"] in spot:
         tags.insert(0, f'<span class="tag spot">spot-check {spot.index(pair["id"]) + 1}</span>')
     if pair["id"] in hard:
         tags.insert(0, '<span class="tag hard">hard case</span>')
     license_ = DATASET_LICENSES.get(source["dataset"], "see SOURCES.md")
+    note = f'<p class="src">Meaning check: {html.escape(qc["meaning_note"])}</p>\n' if qc.get("meaning_note") else ""
     tech = (
         f"<details><summary>Technical names and verbs ({len(technical)})</summary>"
         f"<p>{html.escape(', '.join(technical))}</p></details>"
@@ -102,12 +110,12 @@ def card(pair: dict[str, Any], spot: list[str], hard: set[str]) -> str:
         else ""
     )
     return f"""
-<section class="pair" data-domain="{pair['domain']}" data-messiness="{pair['messiness']}" data-band="{band}"
+<section class="pair" data-file="{file}" data-domain="{pair['domain']}" data-messiness="{pair['messiness']}" data-band="{band}"
  data-spot="{int(pair['id'] in spot)}" id="{pair['id']}">
 <h2>{pair['id']}</h2>
 <p class="tags">{''.join(tags)}</p>
 <p class="src">{html.escape(source['dataset'])} · {html.escape(source.get('ref', ''))} · {html.escape(license_)}</p>
-<div class="cols">
+{note}<div class="cols">
 <div><h3>Input <small>{word_count(pair['input'])} words</small></h3>
 <pre>{marked(pair['input'], span_ranges(pair['input'], spans), [])}</pre></div>
 <div><h3>Output <small>{word_count(pair['output'])} words</small></h3>
@@ -163,15 +171,16 @@ apply();
 
 
 def render(paths: list[Path], spot: list[str], hard: set[str]) -> str:
-    pairs = [p for path in paths for p in read_pairs(path)]
-    domains = sorted({p["domain"] for p in pairs})
+    pairs = [(path.stem, p) for path in paths for p in read_pairs(path)]
+    domains = sorted({p["domain"] for _, p in pairs})
     filters = (
-        _options("domain", domains)
+        _options("file", [path.stem for path in paths])
+        + _options("domain", domains)
         + _options("messiness", ["ultra", "mid", "near"])
         + _options("band", [name for name, _, _ in BANDS])
         + f'<label><input type="checkbox" data-filter="spot"> spot-check {len(spot)}</label>'
     )
-    cards = "".join(card(p, spot, hard) for p in pairs)
+    cards = "".join(card(p, spot, hard, file) for file, p in pairs)
     return f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Gold pair review</title><style>{STYLE}</style></head>
