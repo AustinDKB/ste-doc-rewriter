@@ -106,7 +106,7 @@ def test_id_lists_name_gold_pairs():
     pilot = set(_ids(PAIRS))
     assert len(pilot & set(spot)) == 8
     assert 10 <= len(pilot & set(hard)) <= 15
-    # About 15% spot check (38 of 250) and 10-15% hard cases in each batch.
+    # About 15% spot check (37 of 250) and 5 to 8 hard cases in each batch.
     for pairs in BATCHES.values():
         ids = set(_ids(pairs))
         assert len(ids & set(spot)) in (7, 8)

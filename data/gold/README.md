@@ -10,7 +10,7 @@ documentation style (output). One JSON object per line, as in section 11.1 of
 | `pilot.jsonl` | Phase 2 pilot: 50 pairs |
 | `batch-NN.jsonl` | Batches of 50 pairs after the pilot (pair_000051 and later) |
 | `spot_check.txt` | Ids for human review (15%: 8 in the pilot, 7 or 8 in each batch), hard cases first |
-| `hard_cases.txt` | Hard cases (10–15% of each file): dense jargon, code, logs, tables, long incident reports |
+| `hard_cases.txt` | Hard cases (14 in the pilot, 7 or 8 in each batch): dense jargon, code, logs, tables, long incident reports |
 | `ATTRIBUTION.md` | Source row, link, author and license of each input |
 
 To read the pairs side by side, run `make review`. It writes one self-contained
@@ -63,11 +63,16 @@ Each batch has the pilot's length bands (5 sentence, 25 paragraph, 10 section,
 - `qc.ste_strict_unapproved` lists the output words that are neither approved
   nor technical. It is empty for all pairs. `qc.ste_technical_terms` lists
   the words that are accepted as technical names or verbs, for review.
-  A technical name is the name of a specific thing in the domain (a product,
-  component, command, unit, standard, protocol, metric or role). Everyday
-  words (for example "simple", "years" or "two") must be approved words.
-  The batches use this rule; the pilot lists come from an earlier, less strict
-  check.
+  A technical name is a word that one of the technical-name categories of
+  ASD-STE100 rule 1.5 covers. In short: products, parts, tools and materials;
+  systems and facilities; science, math and engineering terms; places and
+  directions; numbers, units and time; body parts and medical terms;
+  personal items, food and drink; weather and operating conditions; colors;
+  document parts; quoted text; and roles, persons and organizations. A word
+  that no category covers (for example "simple", "home" or "fear") must be
+  an approved word, or the output is reworded. The batches use this rule.
+  The pilot lists come from an earlier check, but they have no word that no
+  category covers.
 - The batch lists come from a check against the ASD-STE100 overlay that
   `ste-rewrite import-asd` writes to the gitignored `glossary/local/`. The
   approved-vocabulary lint with that overlay also runs on each batch output:
