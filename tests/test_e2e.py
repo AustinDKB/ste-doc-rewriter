@@ -1,5 +1,7 @@
 """End-to-end protect → swap → lint on sample docs."""
 
+import shutil
+import tempfile
 from pathlib import Path
 
 import pytest
@@ -9,7 +11,23 @@ from ste_doc_rewriter.pipeline import lint_text, rewrite
 
 ROOT = Path(__file__).resolve().parents[1]
 SAMPLES = ROOT / "samples"
-GLOSSARY = ROOT / "glossary"
+
+
+def _glossary_without_local() -> Path:
+    """Bundled glossary only. A gitignored overlay must not change these checks."""
+    dest = Path(tempfile.mkdtemp(prefix="ste-glossary-"))
+    src_root = ROOT / "glossary"
+    for src in src_root.rglob("*.json"):
+        rel = src.relative_to(src_root)
+        if rel.parts[0] == "local":
+            continue
+        target = dest / rel
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy(src, target)
+    return dest
+
+
+GLOSSARY = _glossary_without_local()
 
 
 def test_rewrite_protects_code_and_swaps_words():

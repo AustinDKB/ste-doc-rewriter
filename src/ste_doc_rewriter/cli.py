@@ -7,6 +7,11 @@ import json
 import sys
 from pathlib import Path
 
+from ste_doc_rewriter.asd_import import (
+    import_dictionary_text,
+    read_dictionary_source,
+    write_overlay,
+)
 from ste_doc_rewriter.glossary import (
     DEFAULT_GLOSSARY_DIR,
     iter_glossary_files,
@@ -76,6 +81,20 @@ def cmd_rewrite(args: argparse.Namespace) -> int:
     threshold = args.threshold
     if threshold is not None and result.lint.score < threshold:
         return 1
+    return 0
+
+
+def cmd_import_asd(args: argparse.Namespace) -> int:
+    source = Path(args.source)
+    rows, stats = import_dictionary_text(read_dictionary_source(source))
+    path = write_overlay(rows, Path(args.out))
+    skipped = sum(stats.skipped.values())
+    print(f"approved rows: {stats.approved_rows}")
+    print(f"swap rows: {stats.swap_rows}")
+    print(f"skipped: {skipped}")
+    for reason, count in stats.skipped.items():
+        print(f"  {reason}: {count}")
+    print(f"wrote {path}")
     return 0
 
 
@@ -163,6 +182,21 @@ def build_parser() -> argparse.ArgumentParser:
         help=f"Glossary directory (default: {DEFAULT_GLOSSARY_DIR})",
     )
     gv_val.set_defaults(func=cmd_glossary_validate)
+
+    imp = sub.add_parser(
+        "import-asd",
+        help="Import an ASD-STE100 Issue 9 PDF or layout dump into glossary/local",
+    )
+    imp.add_argument(
+        "source",
+        help="Issue 9 PDF or a pdftotext -layout dump. A PDF needs pdftotext.",
+    )
+    imp.add_argument(
+        "--out",
+        required=True,
+        help="Directory for the gitignored overlay JSON",
+    )
+    imp.set_defaults(func=cmd_import_asd)
 
     return p
 
