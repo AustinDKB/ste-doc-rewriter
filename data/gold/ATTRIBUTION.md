@@ -205,3 +205,53 @@ source license (see [README.md](README.md)); the output is a rewrite of it.
 | pair_000198 | chaojiang06/wiki_auto | [Shinagawa Station](https://en.wikipedia.org/wiki?curid=376039) | Wikipedia contributors | CC BY-SA 3.0 (Wikipedia text) |
 | pair_000199 | chaojiang06/wiki_auto | [IEEE 802.1aq](https://en.wikipedia.org/wiki?curid=23094504) | Wikipedia contributors | CC BY-SA 3.0 (Wikipedia text) |
 | pair_000200 | chaojiang06/wiki_auto | [Maple (software)](https://en.wikipedia.org/wiki?curid=79099) | Wikipedia contributors | CC BY-SA 3.0 (Wikipedia text) |
+| pair_000201 | grammarly/coedit | 354 | — | Apache-2.0 |
+| pair_000202 | grammarly/coedit | 1525 | — | Apache-2.0 |
+| pair_000203 | open-index/open-github-issues | [etcd-io/etcd#20456](https://github.com/etcd-io/etcd/issues/20456) | — | ODC-By 1.0 (GitHub Terms of Service apply to the text) |
+| pair_000204 | HuggingFaceH4/stack-exchange-preferences | [devops.stackexchange.com/q5177/a15404](https://devops.stackexchange.com/a/15404) | [DivineCoder](https://devops.stackexchange.com/users/33867) | CC BY-SA 4.0 |
+| pair_000205 | chaojiang06/wiki_auto | [British Rail Class 380](https://en.wikipedia.org/wiki?curid=18399971) | Wikipedia contributors | CC BY-SA 3.0 (Wikipedia text) |
+| pair_000206 | elihoole/asrs-aviation-reports | [ACN 1315334](https://asrs.arc.nasa.gov/search/database.html) | — | Apache-2.0 (NASA ASRS, U.S. government work) |
+| pair_000207 | elihoole/asrs-aviation-reports | [ACN 1872474](https://asrs.arc.nasa.gov/search/database.html) | — | Apache-2.0 (NASA ASRS, U.S. government work) |
+| pair_000208 | open-index/open-github-issues | [etcd-io/etcd#20640](https://github.com/etcd-io/etcd/issues/20640) | — | ODC-By 1.0 (GitHub Terms of Service apply to the text) |
+| pair_000209 | open-index/open-github-issues | [redis/redis#3287](https://github.com/redis/redis/issues/3287) | — | ODC-By 1.0 (GitHub Terms of Service apply to the text) |
+| pair_000210 | open-index/open-github-issues | [redis/redis#12585](https://github.com/redis/redis/issues/12585) | — | ODC-By 1.0 (GitHub Terms of Service apply to the text) |
+| pair_000211 | open-index/open-github-issues | [redis/redis#14064](https://github.com/redis/redis/issues/14064) | — | ODC-By 1.0 (GitHub Terms of Service apply to the text) |
+| pair_000212 | open-index/open-github-issues | [vuejs/docs#2470](https://github.com/vuejs/docs/issues/2470) | — | ODC-By 1.0 (GitHub Terms of Service apply to the text) |
+| pair_000213 | open-index/open-github-issues | [vuejs/docs#2844](https://github.com/vuejs/docs/issues/2844) | — | ODC-By 1.0 (GitHub Terms of Service apply to the text) |
+| pair_000214 | HuggingFaceH4/stack-exchange-preferences | [datascience.stackexchange.com/q5885/a5887](https://datascience.stackexchange.com/a/5887) | [device_exec](https://datascience.stackexchange.com/users/9801) | CC BY-SA 4.0 |
+| pair_000215 | HuggingFaceH4/stack-exchange-preferences | [datascience.stackexchange.com/q11121/a11145](https://datascience.stackexchange.com/a/11145) | [Bach](https://datascience.stackexchange.com/users/16704) | CC BY-SA 4.0 |
+| pair_000216 | HuggingFaceH4/stack-exchange-preferences | [devops.stackexchange.com/q5279/a6534](https://devops.stackexchange.com/a/6534) | [Qin Ma](https://devops.stackexchange.com/users/12743) | CC BY-SA 4.0 |
+| pair_000217 | HuggingFaceH4/stack-exchange-preferences | [devops.stackexchange.com/q6071/a6074](https://devops.stackexchange.com/a/6074) | [storm](https://devops.stackexchange.com/users/800) | CC BY-SA 4.0 |
+| pair_000218 | HuggingFaceH4/stack-exchange-preferences | [softwareengineering.stackexchange.com/q28098/a28101](https://softwareengineering.stackexchange.com/a/28101) | [Lennart Regebro](https://softwareengineering.stackexchange.com/users/9529) | CC BY-SA 4.0 |
+| pair_000219 | HuggingFaceH4/stack-exchange-preferences | [softwareengineering.stackexchange.com/q29075/a29080](https://softwareengineering.stackexchange.com/a/29080) | [Michael Kohne](https://softwareengineering.stackexchange.com/users/6294) | CC BY-SA 4.0 |
+| pair_000220 | HuggingFaceH4/stack-exchange-preferences | [sqa.stackexchange.com/q7495/a7551](https://sqa.stackexchange.com/a/7551) | [Nico Villanueva](https://sqa.stackexchange.com/users/6740) | CC BY-SA 4.0 |
+| pair_000221 | HuggingFaceH4/stack-exchange-preferences | [sqa.stackexchange.com/q686/a1114](https://sqa.stackexchange.com/a/1114) | [Flash Sheridan](https://sqa.stackexchange.com/users/482) | CC BY-SA 4.0 |
+| pair_000222 | HuggingFaceH4/stack-exchange-preferences | [stats.stackexchange.com/q8300/a8301](https://stats.stackexchange.com/a/8301) | [xmjx](https://stats.stackexchange.com/users/1048) | CC BY-SA 4.0 |
+| pair_000223 | HuggingFaceH4/stack-exchange-preferences | [stats.stackexchange.com/q10478/a10536](https://stats.stackexchange.com/a/10536) | [Brendan OConnor](https://stats.stackexchange.com/users/3799) | CC BY-SA 4.0 |
+| pair_000224 | HuggingFaceH4/stack-exchange-preferences | [ux.stackexchange.com/q1627/a1631](https://ux.stackexchange.com/a/1631) | [Community](https://ux.stackexchange.com/users/-1) | CC BY-SA 4.0 |
+| pair_000225 | HuggingFaceH4/stack-exchange-preferences | [ux.stackexchange.com/q2065/a5838](https://ux.stackexchange.com/a/5838) | [sysscore](https://ux.stackexchange.com/users/4501) | CC BY-SA 4.0 |
+| pair_000226 | chaojiang06/wiki_auto | [Sharp Zaurus](https://en.wikipedia.org/wiki?curid=247137) | Wikipedia contributors | CC BY-SA 3.0 (Wikipedia text) |
+| pair_000227 | chaojiang06/wiki_auto | [Arena (web browser)](https://en.wikipedia.org/wiki?curid=24050942) | Wikipedia contributors | CC BY-SA 3.0 (Wikipedia text) |
+| pair_000228 | chaojiang06/wiki_auto | [Tokyo Metro Tōzai Line](https://en.wikipedia.org/wiki?curid=1035880) | Wikipedia contributors | CC BY-SA 3.0 (Wikipedia text) |
+| pair_000229 | chaojiang06/wiki_auto | [Sabayon Linux](https://en.wikipedia.org/wiki?curid=3834804) | Wikipedia contributors | CC BY-SA 3.0 (Wikipedia text) |
+| pair_000230 | chaojiang06/wiki_auto | [Time in Ethiopia](https://en.wikipedia.org/wiki?curid=10839656) | Wikipedia contributors | CC BY-SA 3.0 (Wikipedia text) |
+| pair_000231 | elihoole/asrs-aviation-reports | [ACN 1710944](https://asrs.arc.nasa.gov/search/database.html) | — | Apache-2.0 (NASA ASRS, U.S. government work) |
+| pair_000232 | elihoole/asrs-aviation-reports | [ACN 1195522](https://asrs.arc.nasa.gov/search/database.html) | — | Apache-2.0 (NASA ASRS, U.S. government work) |
+| pair_000233 | elihoole/asrs-aviation-reports | [ACN 1097978](https://asrs.arc.nasa.gov/search/database.html) | — | Apache-2.0 (NASA ASRS, U.S. government work) |
+| pair_000234 | open-index/open-github-issues | [redis/redis#12570](https://github.com/redis/redis/issues/12570) | — | ODC-By 1.0 (GitHub Terms of Service apply to the text) |
+| pair_000235 | open-index/open-github-issues | [redis/redis#13839](https://github.com/redis/redis/issues/13839) | — | ODC-By 1.0 (GitHub Terms of Service apply to the text) |
+| pair_000236 | open-index/open-github-issues | [redis/redis#13335](https://github.com/redis/redis/issues/13335) | — | ODC-By 1.0 (GitHub Terms of Service apply to the text) |
+| pair_000237 | HuggingFaceH4/stack-exchange-preferences | [softwareengineering.stackexchange.com/q500/a14177](https://softwareengineering.stackexchange.com/a/14177) | [Junior Mayhé](https://softwareengineering.stackexchange.com/users/5934) | CC BY-SA 4.0 |
+| pair_000238 | HuggingFaceH4/stack-exchange-preferences | [softwareengineering.stackexchange.com/q12528/a167342](https://softwareengineering.stackexchange.com/a/167342) | [mikera](https://softwareengineering.stackexchange.com/users/6909) | CC BY-SA 4.0 |
+| pair_000239 | elihoole/asrs-aviation-reports | [ACN 1821480](https://asrs.arc.nasa.gov/search/database.html) | — | Apache-2.0 (NASA ASRS, U.S. government work) |
+| pair_000240 | chaojiang06/wiki_auto | [Brad Fitzpatrick](https://en.wikipedia.org/wiki?curid=145189) | Wikipedia contributors | CC BY-SA 3.0 (Wikipedia text) |
+| pair_000241 | open-index/open-github-issues | [duckdb/duckdb#22238](https://github.com/duckdb/duckdb/issues/22238) | — | ODC-By 1.0 (GitHub Terms of Service apply to the text) |
+| pair_000242 | open-index/open-github-issues | [etcd-io/etcd#13632](https://github.com/etcd-io/etcd/issues/13632) | — | ODC-By 1.0 (GitHub Terms of Service apply to the text) |
+| pair_000243 | open-index/open-github-issues | [redis/redis#13821](https://github.com/redis/redis/issues/13821) | — | ODC-By 1.0 (GitHub Terms of Service apply to the text) |
+| pair_000244 | HuggingFaceH4/stack-exchange-preferences | [datascience.stackexchange.com/q6328/a6333](https://datascience.stackexchange.com/a/6333) | [Jareth Holt](https://datascience.stackexchange.com/users/10427) | CC BY-SA 4.0 |
+| pair_000245 | HuggingFaceH4/stack-exchange-preferences | [devops.stackexchange.com/q16038/a16223](https://devops.stackexchange.com/a/16223) | [jdog](https://devops.stackexchange.com/users/8251) | CC BY-SA 4.0 |
+| pair_000246 | HuggingFaceH4/stack-exchange-preferences | [softwareengineering.stackexchange.com/q33474/a33486](https://softwareengineering.stackexchange.com/a/33486) | [Ryan Hayes](https://softwareengineering.stackexchange.com/users/1521) | CC BY-SA 4.0 |
+| pair_000247 | HuggingFaceH4/stack-exchange-preferences | [stats.stackexchange.com/q4575/a164387](https://stats.stackexchange.com/a/164387) | [SemanticBeeng](https://stats.stackexchange.com/users/83937) | CC BY-SA 4.0 |
+| pair_000248 | chaojiang06/wiki_auto | [Computer animation](https://en.wikipedia.org/wiki?curid=6777) | Wikipedia contributors | CC BY-SA 3.0 (Wikipedia text) |
+| pair_000249 | chaojiang06/wiki_auto | [PlayStation Store](https://en.wikipedia.org/wiki?curid=9783860) | Wikipedia contributors | CC BY-SA 3.0 (Wikipedia text) |
+| pair_000250 | chaojiang06/wiki_auto | [Bjarne Stroustrup](https://en.wikipedia.org/wiki?curid=3713) | Wikipedia contributors | CC BY-SA 3.0 (Wikipedia text) |

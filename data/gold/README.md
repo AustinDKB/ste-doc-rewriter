@@ -41,6 +41,7 @@ Each batch has the pilot's length bands (5 sentence, 25 paragraph, 10 section,
 | `batch-01.jsonl` | swe 13, other 11, devops 10, design 7, data_science 6, quality 2, analytics 1 | 0.8667 / 1.0 | 8 | 8 |
 | `batch-02.jsonl` | swe 18, devops 17, other 6, data_science 5, design 3, quality 1 | 0.8 / 1.0 | 8 | 8 |
 | `batch-03.jsonl` | devops 15, swe 12, other 10, data_science 9, quality 2, design 2 | 0.8333 / 1.0 | 7 | 8 |
+| `batch-04.jsonl` | devops 14, other 13, swe 10, data_science 7, design 4, quality 2 | 0.8182 / 1.0 | 7 | 7 |
 
 ## How the outputs were written
 
