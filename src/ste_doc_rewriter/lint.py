@@ -253,7 +253,7 @@ def lint(
 
     Protected spans should already be placeholders (see protect.protect); each one
     counts as one neutral word. The approved_vocabulary check runs only when the
-    glossary has "approved" entries (a licensed list in glossary/local/).
+    glossary has "approved" entries (the ASD-STE100 overlay in glossary/local/).
     """
     max_words = 20 if mode == "procedure" else 25
     findings: list[Finding] = []

@@ -49,7 +49,7 @@ FORM_RE = re.compile(
     rf"^{FORM_WORD}(?:[ \t]+{FORM_WORD})*"
     rf"(?:,[ \t]*{FORM_WORD}(?:[ \t]+{FORM_WORD})*)*,?$"
 )
-ALSO_RE = re.compile(rf"^\(also[ \t]+(?P<body>[A-Z][A-Z ,’'/-]+)\)[ \t]*$")
+ALSO_RE = re.compile(r"^\(also[ \t]+(?P<body>[A-Z][A-Z ,’'/-]+)\)[ \t]*$")
 PAREN_FORM_RE = re.compile(rf"^\([A-Z][A-Z ,’'/-]*,?$|^{FORM_WORD}(?:[ \t]+{FORM_WORD})*\)[ \t]*$|^\([A-Z][A-Z ,’'/-]+\)$")
 TOKEN_RE = re.compile(
     rf"\((?:TN|TV)\)"
