@@ -581,8 +581,10 @@ def technical_words(text: str) -> set[str]:
     return {_lower(word) for word in TECHNICAL_RE.findall(text)}
 
 
-def rows_for(entries: list[Entry], technical: set[str]) -> list[dict]:
+def rows_for(entries: list[Entry], technical: set[str]) -> tuple[list[dict], int]:
+    """Return overlay rows and the count of swap rows skipped for a part-of-speech mismatch."""
     rows: list[dict] = []
+    pos_mismatch = 0
     seen: set[tuple] = set()
 
     def add(term: str, replace: str, kind: str, pos: str) -> None:
@@ -603,7 +605,9 @@ def rows_for(entries: list[Entry], technical: set[str]) -> list[dict]:
         if entry.approved:
             for spelling in _approved_spellings(entry.term_raw, entry.forms, entry.pos):
                 add(spelling, spelling, "approved", POS_MAP[entry.pos])
-    approved = {row["term"] for row in rows}
+    approved: dict[str, set[str]] = {}
+    for row in rows:
+        approved.setdefault(row["term"], set()).add(row["pos"])
     for entry in live:
         if entry.approved:
             continue
@@ -615,9 +619,15 @@ def rows_for(entries: list[Entry], technical: set[str]) -> list[dict]:
             if all(alt in technical and term in alt for alt in entry.alts):
                 continue
             for alt in entry.alts:
+                # A one-word swap to a word approved only as another part of
+                # speech breaks the sentence (respond (v) -> RESULT (n)).
+                alt_pos = approved.get(alt) if " " not in alt else None
+                if alt_pos and POS_MAP[entry.pos] not in alt_pos:
+                    pos_mismatch += 1
+                    continue
                 add(term, alt, "ste_swap", POS_MAP[entry.pos])
     rows.sort(key=lambda row: (row["kind"], row["term"], row["pos"]))
-    return rows
+    return rows, pos_mismatch
 
 
 @dataclass(frozen=True)
@@ -633,8 +643,10 @@ OVERLAY_NAME = "asd-ste100.json"
 def import_dictionary_text(text: str) -> tuple[list[dict], ImportStats]:
     """Parse a layout dump into schema-shaped rows and skip counts."""
     entries, skipped = parse_entries(body_lines(text))
-    rows = rows_for(entries, technical_words(text))
+    rows, pos_mismatch = rows_for(entries, technical_words(text))
     reasons = Counter(reason for _, reason in skipped)
+    if pos_mismatch:
+        reasons["pos_mismatch"] = pos_mismatch
     return rows, ImportStats(
         approved_rows=sum(row["kind"] == "approved" for row in rows),
         swap_rows=sum(row["kind"] == "ste_swap" for row in rows),

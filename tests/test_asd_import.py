@@ -64,6 +64,9 @@ drob (v)           DRY-DROB (TV)            DRY-DROB THE FLIM.     Drob the flim
                    WET-DROB (TV)            WET-DROB THE FLIM.     Drob the flim wet.
 spinx (v)          TURN … QUICKLY (v)       TURN IT QUICKLY.       Spinx it.
                    BRACK (v)                BRACK IT.              Spinx it again.
+frabble (n)        ZORB (v)                 ZORB IT.               Do a frabble.
+                   GLORP (n)                GET A GLORP.           Get a frabble.
+grizzle (v)        BLORT (adv)              DO IT BLORT.           Grizzle it.
 
 Issue 9                                 Part 2 - Dictionary                        Page 2-1-Z1
 2025-01-15
@@ -99,7 +102,7 @@ def test_layout_import_keeps_spellings_and_replacements_only():
     blob = json.dumps(rows)
     assert "made-up" not in blob
     assert "WITH A ZORB" not in blob
-    assert stats.skipped == {"no_alternative": 1, "prefix": 1}
+    assert stats.skipped == {"no_alternative": 1, "pos_mismatch": 2, "prefix": 1}
     assert stats.approved_rows == sum(row["kind"] == "approved" for row in rows)
     assert stats.swap_rows == sum(row["kind"] == "ste_swap" for row in rows)
     assert all(row["source_url"] == "https://www.asd-ste100.org/" for row in rows)
@@ -158,6 +161,15 @@ def test_no_swap_inserts_the_object_placeholder():
     swaps = [row["replace"] for row in rows if row["term"] == "spinx"]
     assert swaps == ["brack"]
     assert not any("..." in row["replace"] or "…" in row["replace"] for row in rows)
+
+
+
+def test_no_swap_to_a_word_approved_only_in_another_part_of_speech():
+    rows, stats = import_dictionary_text(FIXTURE)
+    frabble = [row["replace"] for row in rows if row["term"] == "frabble"]
+    assert frabble == ["glorp"]
+    assert "grizzle" not in {row["term"] for row in rows}
+    assert stats.skipped["pos_mismatch"] == 2
 
 
 @pytest.fixture
