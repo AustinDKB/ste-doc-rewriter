@@ -144,7 +144,8 @@ def test_strict_ste_keeps_approved_words_that_plain_language_swaps(bundled_gloss
 def test_plain_language_swaps_that_fight_ste_do_not_apply(bundled_glossary: Path):
     # terminate→end and therefore→so disagree with STE (stop, thus).
     # utilisation, utilization, require, consequently, remainder and reside
-    # would swap in a word STE does not approve in that part of speech.
+    # would swap in a word STE does not approve in that part of speech, so
+    # rewrite leaves them and lint flags them.
     text = (
         "Terminate the job. Therefore the pump stops. "
         "The utilization and utilisation stay high. "
@@ -156,3 +157,14 @@ def test_plain_language_swaps_that_fight_ste_do_not_apply(bundled_glossary: Path
         "The utilization and utilisation stay high. "
         "We require fuel. The remainder will reside here. Consequently wait."
     )
+    flagged = {
+        (f.message, f.suggestion) for f in result.lint.findings if f.rule == "not_approved"
+    }
+    assert flagged == {
+        ("Not-approved word 'utilization'", "use"),
+        ("Not-approved word 'utilisation'", "use"),
+        ("Not-approved word 'require'", "necessary"),
+        ("Not-approved word 'remainder'", "remaining"),
+        ("Not-approved word 'reside'", "be"),
+        ("Not-approved word 'Consequently'", "thus"),
+    }
