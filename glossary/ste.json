@@ -9,24 +9,6 @@
     "notes": "PlainLanguage.gov word tip; not from the ASD-STE100 dictionary"
   },
   {
-    "term": "utilisation",
-    "replace": "use",
-    "kind": "ste_swap",
-    "pos": "noun",
-    "domains": ["general"],
-    "source_url": "https://www.plainlanguage.gov/guidelines/words/",
-    "notes": "PlainLanguage.gov word tip; not from the ASD-STE100 dictionary. British spelling variant of utilization"
-  },
-  {
-    "term": "utilization",
-    "replace": "use",
-    "kind": "ste_swap",
-    "pos": "noun",
-    "domains": ["general"],
-    "source_url": "https://www.plainlanguage.gov/guidelines/words/",
-    "notes": "PlainLanguage.gov word tip; not from the ASD-STE100 dictionary"
-  },
-  {
     "term": "commence",
     "replace": "start",
     "kind": "ste_swap",
@@ -37,12 +19,12 @@
   },
   {
     "term": "terminate",
-    "replace": "end",
+    "replace": "stop",
     "kind": "ste_swap",
     "pos": "verb",
     "domains": ["general"],
     "source_url": "https://www.plainlanguage.gov/guidelines/words/",
-    "notes": "PlainLanguage.gov word tip; not from the ASD-STE100 dictionary. Prefer end/stop for prose; process kill contexts stay protected in code"
+    "notes": "PlainLanguage.gov word tip was end. Strict STE uses stop; end is not the verb"
   },
   {
     "term": "facilitate",
@@ -84,15 +66,6 @@
   {
     "term": "demonstrate",
     "replace": "show",
-    "kind": "ste_swap",
-    "pos": "verb",
-    "domains": ["general"],
-    "source_url": "https://www.plainlanguage.gov/guidelines/words/",
-    "notes": "PlainLanguage.gov word tip; not from the ASD-STE100 dictionary"
-  },
-  {
-    "term": "require",
-    "replace": "need",
     "kind": "ste_swap",
     "pos": "verb",
     "domains": ["general"],
@@ -144,15 +117,6 @@
     "notes": "PlainLanguage.gov word tip; not from the ASD-STE100 dictionary"
   },
   {
-    "term": "consequently",
-    "replace": "so",
-    "kind": "ste_swap",
-    "pos": "adverb",
-    "domains": ["general"],
-    "source_url": "https://www.plainlanguage.gov/guidelines/words/",
-    "notes": "PlainLanguage.gov word tip; not from the ASD-STE100 dictionary"
-  },
-  {
     "term": "concerning",
     "replace": "about",
     "kind": "ste_swap",
@@ -188,24 +152,6 @@
     "notes": "PlainLanguage.gov word tip; not from the ASD-STE100 dictionary"
   },
   {
-    "term": "remainder",
-    "replace": "rest",
-    "kind": "ste_swap",
-    "pos": "noun",
-    "domains": ["general"],
-    "source_url": "https://www.plainlanguage.gov/guidelines/words/",
-    "notes": "PlainLanguage.gov word tip; not from the ASD-STE100 dictionary"
-  },
-  {
-    "term": "reside",
-    "replace": "live",
-    "kind": "ste_swap",
-    "pos": "verb",
-    "domains": ["general"],
-    "source_url": "https://www.plainlanguage.gov/guidelines/words/",
-    "notes": "PlainLanguage.gov word tip; not from the ASD-STE100 dictionary"
-  },
-  {
     "term": "subsequent",
     "replace": "next",
     "kind": "ste_swap",
@@ -217,11 +163,11 @@
   },
   {
     "term": "therefore",
-    "replace": "so",
+    "replace": "thus",
     "kind": "ste_swap",
     "pos": "adverb",
     "domains": ["general"],
     "source_url": "https://www.plainlanguage.gov/guidelines/words/",
-    "notes": "PlainLanguage.gov word tip; not from the ASD-STE100 dictionary"
+    "notes": "PlainLanguage.gov word tip was so. Strict STE uses thus"
   }
 ]
