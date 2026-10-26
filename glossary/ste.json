@@ -11,20 +11,20 @@
   {
     "term": "utilisation",
     "replace": "use",
-    "kind": "ste_swap",
+    "kind": "avoid",
     "pos": "noun",
     "domains": ["general"],
     "source_url": "https://www.plainlanguage.gov/guidelines/words/",
-    "notes": "PlainLanguage.gov word tip; not from the ASD-STE100 dictionary. British spelling variant of utilization"
+    "notes": "PlainLanguage.gov word tip was use, which strict STE approves only as a verb. Lint flags it; reword with the verb use. British spelling variant of utilization"
   },
   {
     "term": "utilization",
     "replace": "use",
-    "kind": "ste_swap",
+    "kind": "avoid",
     "pos": "noun",
     "domains": ["general"],
     "source_url": "https://www.plainlanguage.gov/guidelines/words/",
-    "notes": "PlainLanguage.gov word tip; not from the ASD-STE100 dictionary"
+    "notes": "PlainLanguage.gov word tip was use, which strict STE approves only as a verb. Lint flags it; reword with the verb use"
   },
   {
     "term": "commence",
@@ -37,12 +37,12 @@
   },
   {
     "term": "terminate",
-    "replace": "end",
+    "replace": "stop",
     "kind": "ste_swap",
     "pos": "verb",
     "domains": ["general"],
     "source_url": "https://www.plainlanguage.gov/guidelines/words/",
-    "notes": "PlainLanguage.gov word tip; not from the ASD-STE100 dictionary. Prefer end/stop for prose; process kill contexts stay protected in code"
+    "notes": "PlainLanguage.gov word tip was end. Strict STE uses stop; end is not the verb"
   },
   {
     "term": "facilitate",
@@ -92,12 +92,12 @@
   },
   {
     "term": "require",
-    "replace": "need",
-    "kind": "ste_swap",
+    "replace": "necessary",
+    "kind": "avoid",
     "pos": "verb",
     "domains": ["general"],
     "source_url": "https://www.plainlanguage.gov/guidelines/words/",
-    "notes": "PlainLanguage.gov word tip; not from the ASD-STE100 dictionary"
+    "notes": "PlainLanguage.gov word tip was need, which strict STE does not approve. Lint flags it; reword with necessary or must"
   },
   {
     "term": "sufficient",
@@ -145,12 +145,12 @@
   },
   {
     "term": "consequently",
-    "replace": "so",
-    "kind": "ste_swap",
+    "replace": "thus",
+    "kind": "avoid",
     "pos": "adverb",
     "domains": ["general"],
     "source_url": "https://www.plainlanguage.gov/guidelines/words/",
-    "notes": "PlainLanguage.gov word tip; not from the ASD-STE100 dictionary"
+    "notes": "PlainLanguage.gov word tip was so, which strict STE does not approve. Lint flags it; reword with thus or as a result"
   },
   {
     "term": "concerning",
@@ -189,21 +189,21 @@
   },
   {
     "term": "remainder",
-    "replace": "rest",
-    "kind": "ste_swap",
+    "replace": "remaining",
+    "kind": "avoid",
     "pos": "noun",
     "domains": ["general"],
     "source_url": "https://www.plainlanguage.gov/guidelines/words/",
-    "notes": "PlainLanguage.gov word tip; not from the ASD-STE100 dictionary"
+    "notes": "PlainLanguage.gov word tip was rest, which strict STE does not approve as a noun. Lint flags it; reword with remaining"
   },
   {
     "term": "reside",
-    "replace": "live",
-    "kind": "ste_swap",
+    "replace": "be",
+    "kind": "avoid",
     "pos": "verb",
     "domains": ["general"],
     "source_url": "https://www.plainlanguage.gov/guidelines/words/",
-    "notes": "PlainLanguage.gov word tip; not from the ASD-STE100 dictionary"
+    "notes": "PlainLanguage.gov word tip was live, which strict STE does not approve as a verb. Lint flags it; reword with be"
   },
   {
     "term": "subsequent",
@@ -217,11 +217,11 @@
   },
   {
     "term": "therefore",
-    "replace": "so",
+    "replace": "thus",
     "kind": "ste_swap",
     "pos": "adverb",
     "domains": ["general"],
     "source_url": "https://www.plainlanguage.gov/guidelines/words/",
-    "notes": "PlainLanguage.gov word tip; not from the ASD-STE100 dictionary"
+    "notes": "PlainLanguage.gov word tip was so. Strict STE uses thus"
   }
 ]
